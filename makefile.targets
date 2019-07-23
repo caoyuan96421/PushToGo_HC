@@ -1,0 +1,13 @@
+
+clean1:
+	$(RM) $(OBJS)
+	$(RM) $(CC_DEPS)$(C++_DEPS)$(C_UPPER_DEPS)$(CXX_DEPS)$(ASM_DEPS)$(S_UPPER_DEPS)$(C_DEPS)$(CPP_DEPS)
+	$(RM) $(SECONDARY_FLASH)$(SECONDARY_SIZE) PushToGo_HC* 
+	-@echo ' '
+
+ 
+PushToGo_HC-extflash.bin: PushToGo_HC.elf
+	@echo 'Invoking: Cross ARM GNU Create External Flash Image'
+	arm-none-eabi-objcopy -O binary --only-section=ExtFlashSection "$<" "$@"
+	@echo 'Finished building: $@'
+	@echo ' '
