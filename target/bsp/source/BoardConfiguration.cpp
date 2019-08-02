@@ -46,6 +46,13 @@
 #include <platform/driver/lcd/LCD24bpp.hpp>
 #include <bsp/OTM8009TouchController.hpp>
 #include <bsp/KeySampler.hpp>
+#include <touchgfx/canvas_widget_renderer/CanvasWidgetRenderer.hpp>
+#include "stm32f4xx_hal.h"
+#include "stm32f4xx_hal_dsi.h"
+#include "stm32469i_discovery_sdram.h"
+#include "stm32469i_discovery_qspi.h"
+#include "stm32469i_discovery.h"
+#include "stm32469i_discovery_lcd.h"
 
 /**
  * In order to use double buffering, simply enable the USE_DOUBLE_BUFFERING #define below
@@ -73,12 +80,6 @@
 
 extern "C"
 {
-#include "stm32f4xx_hal.h"
-#include "stm32f4xx_hal_dsi.h"
-#include "stm32469i_discovery_sdram.h"
-#include "stm32469i_discovery_qspi.h"
-#include "stm32469i_discovery.h"
-#include "stm32469i_discovery_lcd.h"
     void OS_SysTick(void);
     bool os_inited = false;
     void SysTick_Handler(void)
@@ -105,7 +106,33 @@ extern "C"
 #define VSYNC           1
 #define VBP             1
 #define VFP             1
-#define LAYER0_ADDRESS  (LCD_FB_START_ADDRESS)
+//#define LAYER0_ADDRESS  (LCD_FB_START_ADDRESS)
+
+#ifdef USE_DOUBLE_BUFFERING
+#if !defined(USE_BPP) || USE_BPP==16
+	#define FBSIZE (800*480*2) * 3
+#else
+	#define FBSIZE (800*480*3) * 3
+#endif
+#else
+#if !defined(USE_BPP) || USE_BPP==16
+	#define FBSIZE (800*480*2) * 2
+#else
+	#define FBSIZE (800*480*3) * 2
+#endif
+#endif
+
+#define CANVAS_BUFFER_SIZE 262144
+
+// Allocate the frame buffer
+__attribute__((section (".sdram")))
+              uint8_t frameBuf0[FBSIZE];
+
+// Allocate buffer for Canvas widgets
+__attribute__((section (".sdram")))
+              uint8_t canvasBuffer[CANVAS_BUFFER_SIZE];
+
+#define LAYER0_ADDRESS (uint32_t)frameBuf0
 
 #if !defined(USE_BPP) || USE_BPP==16
 #define VACT            200      /* Note: 16bpp: Screen divided in 4 areas of 200 pixels to avoid DSI tearing */
@@ -132,7 +159,7 @@ uint8_t pPageRight[] = { 0x01, 0x90, 0x03, 0x1F }; /* 400 -> 799 */
 uint8_t pColumns[] = { 0x00, 0x00, 0x01, 0xDF }; /*   0 -> 479 */
 //uint8_t pScanCol[] = { 0x02, 0x15 };             /* Scan @ 533 */
 
-static uint32_t frameBuf0 = (uint32_t)(LAYER0_ADDRESS); //Beginning of SDRAM
+//static uint32_t frameBuf0 = (uint32_t)(LAYER0_ADDRESS); //Beginning of SDRAM
 
 static void SystemClock_Config();
 static void LTDC_Init();
@@ -229,6 +256,9 @@ void touchgfx_init()
     //Set MCU instrumentation and Load calculation
     hal.setMCUInstrumentation(&mcuInstr);
     hal.enableMCULoadCalculation(true);
+
+	// Initialize Canvas buffer
+	CanvasWidgetRenderer::setupBuffer(canvasBuffer, CANVAS_BUFFER_SIZE);
 }
 }
 

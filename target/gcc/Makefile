@@ -48,7 +48,7 @@ flash intflash: all
 # Additional components can be added to this list. make will look for
 # source files recursively in comp_name/src and setup an include directive
 # for comp_name/include.
-components := gui target generated/gui_generated
+components := gui target generated/gui_generated astronomy
 
 # Location of folder containing bmp/png files.
 asset_images_input  := assets/images

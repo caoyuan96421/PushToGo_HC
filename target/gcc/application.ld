@@ -8,6 +8,7 @@ MEMORY
     RAM (rw)    : ORIGIN = 0x20000000, LENGTH = 320K
     CCMRAM (rw) : ORIGIN = 0x10000000, LENGTH = 64K
     QUADSPI (r) : ORIGIN = 0x90000000, LENGTH = 16M
+    SDRAM (rwx) : ORIGIN = 0xC0000000, LENGTH = 8M
 }
 
 /* Section Definitions */
@@ -180,7 +181,16 @@ SECTIONS
 		*(.gnu.linkonce.r.*)
         . = ALIGN(0x4);
 	} >QUADSPI
+	
+  .sdram (NOLOAD):
+  {
+    . = ALIGN(4);
+    __sdram_start__ = .;
+    *(.sdram*)
+    . = ALIGN(4);
+    __sdram_end__ = .;
 
+  } > SDRAM  
 }
 
  __valid_user_code_checksum = 0 - (__stack_end__ + ResetISR + 1 + NMI_Handler + 1 + HardFault_Handler + 1 + MemManage_Handler + 1 + BusFault_Handler + 1 + UsageFault_Handler + 1);

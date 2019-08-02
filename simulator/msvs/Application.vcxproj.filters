@@ -272,10 +272,10 @@
       <UniqueIdentifier>888171C3-036F-46FA-BDEB-01C5BC2BCC72</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\gui\widgets">
-      <UniqueIdentifier>67013FEB-DD65-4CE8-903A-95CBA9B1D691</UniqueIdentifier>
+      <UniqueIdentifier>09695B36-0715-4657-A622-114752A75754</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\gui\widgets">
-      <UniqueIdentifier>EF7AD739-BCAE-46F8-91CA-132726171D53</UniqueIdentifier>
+      <UniqueIdentifier>7A68DA4A-9FCC-4C23-8DAB-15B43F212405</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
