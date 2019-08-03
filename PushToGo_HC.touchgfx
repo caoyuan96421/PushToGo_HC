@@ -299,8 +299,7 @@
               "Type": "TriggerClicked"
             },
             "Action": {
-              "ScreenTransitionType": "ScreenTransitionSlide",
-              "ScreenTransitionDirection": "East",
+              "ScreenTransitionType": "ScreenTransitionNone",
               "ActionComponent": "StarMapScreen",
               "Type": "ActionGotoScreen"
             }

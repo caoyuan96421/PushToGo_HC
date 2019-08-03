@@ -41,8 +41,11 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "portable.h"
 #include <touchgfx/hal/GPIO.hpp>
 #include <touchgfx/hal/HAL.hpp>
+#include "Debug.h"
+#include <new>
 
 using namespace touchgfx;
 
@@ -52,95 +55,114 @@ static xQueueHandle vsync_q = 0;
 // Just a dummy value to insert in the VSYNC queue.
 static uint8_t dummy = 0x5a;
 
-void OSWrappers::initialize()
-{
-    vSemaphoreCreateBinary(frame_buffer_sem);
-    // Create a queue of length 1
-    vsync_q = xQueueGenericCreate(1, 1, 0);
+void OSWrappers::initialize() {
+	vSemaphoreCreateBinary(frame_buffer_sem);
+	// Create a queue of length 1
+	vsync_q = xQueueGenericCreate(1, 1, 0);
 }
 
-void OSWrappers::takeFrameBufferSemaphore()
-{
-    xSemaphoreTake(frame_buffer_sem, portMAX_DELAY);
+void OSWrappers::takeFrameBufferSemaphore() {
+	xSemaphoreTake(frame_buffer_sem, portMAX_DELAY);
 }
-void OSWrappers::giveFrameBufferSemaphore()
-{
-    xSemaphoreGive(frame_buffer_sem);
+void OSWrappers::giveFrameBufferSemaphore() {
+	xSemaphoreGive(frame_buffer_sem);
 }
 
-void OSWrappers::tryTakeFrameBufferSemaphore()
-{
-    xSemaphoreTake(frame_buffer_sem, 0);
+void OSWrappers::tryTakeFrameBufferSemaphore() {
+	xSemaphoreTake(frame_buffer_sem, 0);
 }
 
-void OSWrappers::giveFrameBufferSemaphoreFromISR()
-{
-    // Since this is called from an interrupt, FreeRTOS requires special handling to trigger a
-    // re-scheduling. May be applicable for other OSes as well.
-    portBASE_TYPE px = pdFALSE;
-    xSemaphoreGiveFromISR(frame_buffer_sem, &px);
-    portEND_SWITCHING_ISR(px);
+void OSWrappers::giveFrameBufferSemaphoreFromISR() {
+	// Since this is called from an interrupt, FreeRTOS requires special handling to trigger a
+	// re-scheduling. May be applicable for other OSes as well.
+	portBASE_TYPE px = pdFALSE;
+	xSemaphoreGiveFromISR(frame_buffer_sem, &px);
+	portEND_SWITCHING_ISR(px);
 }
 
-void OSWrappers::signalVSync()
-{
-    if (vsync_q)
-    {
-        // Since this is called from an interrupt, FreeRTOS requires special handling to trigger a
-        // re-scheduling. May be applicable for other OSes as well.
-        portBASE_TYPE px = pdFALSE;
-        xQueueSendFromISR(vsync_q, &dummy, &px);
-        portEND_SWITCHING_ISR(px);
-    }
+void OSWrappers::signalVSync() {
+	if (vsync_q) {
+		// Since this is called from an interrupt, FreeRTOS requires special handling to trigger a
+		// re-scheduling. May be applicable for other OSes as well.
+		portBASE_TYPE px = pdFALSE;
+		xQueueSendFromISR(vsync_q, &dummy, &px);
+		portEND_SWITCHING_ISR(px);
+	}
 }
 
-void OSWrappers::waitForVSync()
-{
-    // First make sure the queue is empty, by trying to remove an element with 0 timeout.
-    xQueueReceive(vsync_q, &dummy, 0);
+void OSWrappers::waitForVSync() {
+	// First make sure the queue is empty, by trying to remove an element with 0 timeout.
+	xQueueReceive(vsync_q, &dummy, 0);
 
-    // Then, wait for next VSYNC to occur.
-    xQueueReceive(vsync_q, &dummy, portMAX_DELAY);
+	// Then, wait for next VSYNC to occur.
+	xQueueReceive(vsync_q, &dummy, portMAX_DELAY);
 }
 
-void OSWrappers::taskDelay(uint16_t ms)
-{
-    vTaskDelay(ms);
+void OSWrappers::taskDelay(uint16_t ms) {
+	vTaskDelay(ms);
 }
 
-static portBASE_TYPE IdleTaskHook(void* p)
-{
-    if ((int)p) //idle task sched out
-    {
-        touchgfx::HAL::getInstance()->setMCUActive(true);
-    }
-    else //idle task sched in
-    {
-        touchgfx::HAL::getInstance()->setMCUActive(false);
-    }
-    return pdTRUE;
+static portBASE_TYPE IdleTaskHook(void *p) {
+	if ((int) p) //idle task sched out
+	{
+		touchgfx::HAL::getInstance()->setMCUActive(true);
+	} else //idle task sched in
+	{
+		touchgfx::HAL::getInstance()->setMCUActive(false);
+	}
+	return pdTRUE;
 }
 
 // FreeRTOS specific handlers
-extern "C"
-{
-    void vApplicationStackOverflowHook(xTaskHandle xTask,
-                                       signed portCHAR* pcTaskName)
-    {
-        while (1);
-    }
+extern "C" {
+void vApplicationStackOverflowHook(xTaskHandle xTask,
+		signed portCHAR *pcTaskName) {
+	while (1)
+		;
+}
 
-    void vApplicationMallocFailedHook(xTaskHandle xTask,
-                                      signed portCHAR* pcTaskName)
-    {
-        while (1);
-    }
+void vApplicationMallocFailedHook(xTaskHandle xTask,
+		signed portCHAR *pcTaskName) {
+	while (1)
+		;
+}
 
-    void vApplicationIdleHook(void)
-    {
-        // Set task tag in order to have the "IdleTaskHook" function called when the idle task is
-        // switched in/out. Used solely for measuring MCU load, and can be removed if MCU load
-        // readout is not needed.
-        vTaskSetApplicationTaskTag(NULL, IdleTaskHook);
-    }
+void vApplicationIdleHook(void) {
+	// Set task tag in order to have the "IdleTaskHook" function called when the idle task is
+	// switched in/out. Used solely for measuring MCU load, and can be removed if MCU load
+	// readout is not needed.
+	vTaskSetApplicationTaskTag(NULL, IdleTaskHook);
+}
+}
+
+// Redefine new and delete operators to use FreeRTOS memory management
+void* operator new(std::size_t count) {
+	void *buffer = pvPortMalloc(count);
+	if (NULL == buffer) {
+		error("Operator new[] out of memory\r\n");
+	}
+	return buffer;
+}
+
+void* operator new[](std::size_t count) {
+	void *buffer = pvPortMalloc(count);
+	if (NULL == buffer) {
+		error("Operator new[] out of memory\r\n");
+	}
+	return buffer;
+}
+
+void* operator new(std::size_t count, const std::nothrow_t &tag) {
+	return pvPortMalloc(count);
+}
+
+void* operator new[](std::size_t count, const std::nothrow_t &tag) {
+	return pvPortMalloc(count);
+}
+
+void operator delete(void *ptr) {
+	vPortFree(ptr);
+}
+void operator delete[](void *ptr) {
+	vPortFree(ptr);
 }

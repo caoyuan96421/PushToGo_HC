@@ -1417,22 +1417,22 @@
       <group>
         <name>widgets</name>
         <file>
-          <name>$PROJ_DIR$\..\..\gui\widgets\AccordionMenu.cpp</name>
+          <name>$PROJ_DIR$\..\..\gui\src\widgets\AccordionMenu.cpp</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\gui\widgets\ButtonItem.cpp</name>
+          <name>$PROJ_DIR$\..\..\gui\src\widgets\ButtonItem.cpp</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\gui\widgets\ConfigButton.cpp</name>
+          <name>$PROJ_DIR$\..\..\gui\src\widgets\ConfigButton.cpp</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\gui\widgets\NumericalWheelSelector.cpp</name>
+          <name>$PROJ_DIR$\..\..\gui\src\widgets\NumericalWheelSelector.cpp</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\gui\widgets\StarMapWidget.cpp</name>
+          <name>$PROJ_DIR$\..\..\gui\src\widgets\StarMapWidget.cpp</name>
         </file>
         <file>
-          <name>$PROJ_DIR$\..\..\gui\widgets\WheelSelector.cpp</name>
+          <name>$PROJ_DIR$\..\..\gui\src\widgets\WheelSelector.cpp</name>
         </file>
       </group>
     </group>

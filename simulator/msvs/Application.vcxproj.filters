@@ -274,8 +274,17 @@
     <Filter Include="Source Files\gui\widgets">
       <UniqueIdentifier>09695B36-0715-4657-A622-114752A75754</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\gui\widgets">
-      <UniqueIdentifier>7A68DA4A-9FCC-4C23-8DAB-15B43F212405</UniqueIdentifier>
+    <Filter Include="Source Files\gui\include">
+      <UniqueIdentifier>BB8C9E96-84ED-41DC-B45A-9C7F7A18B967</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\include">
+      <UniqueIdentifier>BEDDE361-E834-43DF-BFB0-F1DB8C6C1A9E</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\include\widgets">
+      <UniqueIdentifier>8770554B-2669-4892-8DB4-CFFE8BC19DEA</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\gui\include\widgets">
+      <UniqueIdentifier>E48E4231-B7D6-4F99-87F4-932804858507</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -402,38 +411,38 @@
     <ClCompile Include="..\..\gui\src\model\Model.cpp">
       <Filter>Source Files\gui\model</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\AccordionMenu.cpp">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\AccordionMenu.h">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\ButtonItem.cpp">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\ButtonItem.h">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\ConfigButton.cpp">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\ConfigButton.h">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\NumericalWheelSelector.cpp">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\StarMapWidget.cpp">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\StarMapWidget.h">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\gui\widgets\WheelSelector.cpp">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\gui\include\gui\BaseScreenAdaptor.h">
       <Filter>Source Files\gui</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\widgets\AccordionMenu.cpp">
+      <Filter>Source Files\gui\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\include\widgets\AccordionMenu.h">
+      <Filter>Source Files\gui\include\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\widgets\ButtonItem.cpp">
+      <Filter>Source Files\gui\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\include\widgets\ButtonItem.h">
+      <Filter>Source Files\gui\include\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\widgets\ConfigButton.cpp">
+      <Filter>Source Files\gui\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\include\widgets\ConfigButton.h">
+      <Filter>Source Files\gui\include\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\widgets\NumericalWheelSelector.cpp">
+      <Filter>Source Files\gui\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\widgets\StarMapWidget.cpp">
+      <Filter>Source Files\gui\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\include\widgets\StarMapWidget.h">
+      <Filter>Source Files\gui\include\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\widgets\WheelSelector.cpp">
+      <Filter>Source Files\gui\widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -964,26 +973,26 @@
     <ClInclude Include="..\..\gui\include\gui\model\ModelListener.hpp">
       <Filter>Header Files\gui\model</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\gui\widgets\AccordionMenu.h">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\gui\widgets\ButtonItem.h">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\gui\widgets\ConfigButton.h">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\gui\widgets\NumericalWheelSelector.hpp">
-      <Filter>Header Files\gui\widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\gui\widgets\StarMapWidget.h">
-      <Filter>Source Files\gui\widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\gui\widgets\WheelSelector.hpp">
-      <Filter>Header Files\gui\widgets</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\gui\include\gui\BaseScreenAdaptor.h">
       <Filter>Source Files\gui</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\widgets\AccordionMenu.h">
+      <Filter>Source Files\gui\include\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\widgets\ButtonItem.h">
+      <Filter>Source Files\gui\include\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\widgets\ConfigButton.h">
+      <Filter>Source Files\gui\include\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\widgets\NumericalWheelSelector.hpp">
+      <Filter>Header Files\gui\include\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\widgets\StarMapWidget.h">
+      <Filter>Source Files\gui\include\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\widgets\WheelSelector.hpp">
+      <Filter>Header Files\gui\include\widgets</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

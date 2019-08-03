@@ -4,6 +4,7 @@
 #include <gui_generated/basescreen_screen/BaseScreenViewBase.hpp>
 #include <gui/basescreen_screen/BaseScreenPresenter.hpp>
 #include <ctime>
+#include "CelestialMath.h"
 
 class BaseScreenView : public BaseScreenViewBase
 {
@@ -14,8 +15,8 @@ public:
     virtual void tearDownScreen();
 
     void addTo(Container *scr);
-    //void setTime(time_t timestamp, int tz);
-    //void setEqCoords(const EquatorialCoordinates &eq);
+    void setTime(time_t timestamp, int tz);
+    void setEqCoords(const EquatorialCoordinates &eq);
 protected:
 };
 

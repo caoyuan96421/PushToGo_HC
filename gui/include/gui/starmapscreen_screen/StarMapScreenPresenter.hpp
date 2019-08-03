@@ -3,12 +3,13 @@
 
 #include <gui/model/ModelListener.hpp>
 #include <mvp/Presenter.hpp>
+#include <gui/basescreen_screen/BaseScreenPresenter.hpp>
 
 using namespace touchgfx;
 
 class StarMapScreenView;
 
-class StarMapScreenPresenter : public Presenter, public ModelListener
+class StarMapScreenPresenter : public BaseScreenPresenter
 {
 public:
     StarMapScreenPresenter(StarMapScreenView& v);

@@ -1,5 +1,5 @@
-#include "StarCatalog.h"
-__attribute__((section ("ExtFlashSection"))) StarInfo star_catalog_hyg[41476]={
+#include "HYGMag8.h"
+__attribute__((section ("ExtFlashSection"))) StarInfo star_catalog_hyg[STAR_CATALOG_SIZE]={
 {32349, "9Alp CMa", 101.287216, -16.716116, "Sirius", 2.637100, -1.440000, 1.454000, 0.009000}, 
 {30438, "Alp Car", 95.987930, -52.695660, "Canopus", 94.786697, -0.620000, -5.504000, 0.164000}, 
 {69673, "16Alp Boo", -146.084549, 19.182409, "Arcturus", 11.257500, -0.050000, -0.307000, 1.239000}, 

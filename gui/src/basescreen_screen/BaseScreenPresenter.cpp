@@ -8,15 +8,15 @@ BaseScreenPresenter::BaseScreenPresenter(BaseScreenView& v) :
 
 void BaseScreenPresenter::activate()
 {
-	//view.setTime(model->getTime(), model->getTimeZone());
-	//view.setEqCoords(model->getEqCoords());
+	view.setTime(TelescopeBackend::getTime(), model->getTimeZone());
+	view.setEqCoords(model->getEqCoords());
 }
 
 void BaseScreenPresenter::deactivate()
 {
 
 }
-/*
+
 void BaseScreenPresenter::setTime(time_t timestamp, int tz)
 {
 	view.setTime(timestamp, tz);
@@ -26,4 +26,3 @@ void BaseScreenPresenter::setCoords(const EquatorialCoordinates& eq, const Mount
 {
 	view.setEqCoords(eq);
 }
-*/

@@ -224,10 +224,14 @@ board_c_files += \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_ltdc_ex.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_qspi.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_dsi.c \
+	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_pwr.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_pwr_ex.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc_ex.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_sdram.c \
+	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_uart.c \
+	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rtc.c \
+	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rtc_ex.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_ll_fmc.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_ll_fsmc.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/CMSIS/system_stm32f4xx.c
@@ -251,7 +255,8 @@ board_include_paths := \
 	$(bsp_path)/include/platform/hal/mcu/stm32f4cube/CMSIS \
 	$(bsp_path)/include \
 	$(bsp_path)/include/bsp \
-	$(bsp_path)/source/vendor/STM32469I-Discovery
+	$(bsp_path)/include/vendor/STM32469I-Discovery \
+	$(bsp_path)/include/vendor/Components/otm8009a
 
 # Compiler options
 c_compiler_options += -DST -DSTM32F469xx -DUSE_OS_SYSTICK -DUSE_FLOATING_POINT

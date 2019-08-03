@@ -52,12 +52,12 @@
     <ClCompile Include="..\..\gui\src\utilityscreen_screen\UtilityScreenView.cpp"/>
     <ClCompile Include="..\..\generated\gui_generated\src\utilityscreen_screen\UtilityScreenViewBase.cpp"/>
     <ClCompile Include="..\..\gui\src\model\Model.cpp"/>
-    <ClCompile Include="..\..\gui\widgets\AccordionMenu.cpp"/>
-    <ClCompile Include="..\..\gui\widgets\ButtonItem.cpp"/>
-    <ClCompile Include="..\..\gui\widgets\ConfigButton.cpp"/>
-    <ClCompile Include="..\..\gui\widgets\NumericalWheelSelector.cpp"/>
-    <ClCompile Include="..\..\gui\widgets\StarMapWidget.cpp"/>
-    <ClCompile Include="..\..\gui\widgets\WheelSelector.cpp"/>
+    <ClCompile Include="..\..\gui\src\widgets\AccordionMenu.cpp"/>
+    <ClCompile Include="..\..\gui\src\widgets\ButtonItem.cpp"/>
+    <ClCompile Include="..\..\gui\src\widgets\ConfigButton.cpp"/>
+    <ClCompile Include="..\..\gui\src\widgets\NumericalWheelSelector.cpp"/>
+    <ClCompile Include="..\..\gui\src\widgets\StarMapWidget.cpp"/>
+    <ClCompile Include="..\..\gui\src\widgets\WheelSelector.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\texts\texts.xlsx"/>
@@ -237,13 +237,13 @@
     <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\utilityscreen_screen\UtilityScreenViewBase.hpp"/>
     <ClInclude Include="..\..\gui\include\gui\model\Model.hpp"/>
     <ClInclude Include="..\..\gui\include\gui\model\ModelListener.hpp"/>
-    <ClInclude Include="..\..\gui\widgets\AccordionMenu.h"/>
-    <ClInclude Include="..\..\gui\widgets\ButtonItem.h"/>
-    <ClInclude Include="..\..\gui\widgets\ConfigButton.h"/>
-    <ClInclude Include="..\..\gui\widgets\NumericalWheelSelector.hpp"/>
-    <ClInclude Include="..\..\gui\widgets\StarMapWidget.h"/>
-    <ClInclude Include="..\..\gui\widgets\WheelSelector.hpp"/>
     <ClInclude Include="..\..\gui\include\gui\BaseScreenAdaptor.h"/>
+    <ClInclude Include="..\..\gui\include\widgets\AccordionMenu.h"/>
+    <ClInclude Include="..\..\gui\include\widgets\ButtonItem.h"/>
+    <ClInclude Include="..\..\gui\include\widgets\ConfigButton.h"/>
+    <ClInclude Include="..\..\gui\include\widgets\NumericalWheelSelector.hpp"/>
+    <ClInclude Include="..\..\gui\include\widgets\StarMapWidget.h"/>
+    <ClInclude Include="..\..\gui\include\widgets\WheelSelector.hpp"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\touchgfx.rc"/>

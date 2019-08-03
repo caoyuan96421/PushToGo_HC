@@ -1,5 +1,5 @@
 #include <gui/basescreen_screen/BaseScreenView.hpp>
-#include <ctime>
+#include <cstdio>
 
 BaseScreenView::BaseScreenView()
 {
@@ -29,14 +29,18 @@ void BaseScreenView::addTo(Container *c)
 		c->add(*d);
 	}
 }
-/*
+
 void BaseScreenView::setTime(time_t timestamp, int tz)
 {
 
 	timestamp += tz * 3600;
-
 	struct tm ts;
+
+#ifndef SIMULATOR
 	gmtime_r(&timestamp, &ts);
+#else
+	memcpy(&ts, gmtime(&timestamp), sizeof(struct tm));
+#endif
 
 	char buf[32];
 	Unicode::UnicodeChar bufU[32];
@@ -72,4 +76,3 @@ void BaseScreenView::setEqCoords(const EquatorialCoordinates& eq)
 	dec_coord.invalidate();
 
 }
-*/

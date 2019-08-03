@@ -11,16 +11,21 @@
 
 #ifndef SIMULATOR
 #include "stm32f4xx_hal.h"
+#include "FreeRTOS.h"
+#include "task.h"
+
+static const uint32_t timeout = 300;
+static UART_HandleTypeDef huart;
+
 #endif
 
 static bool inited = false;
-static const uint32_t timeout = 300;
-static UART_HandleTypeDef huart;
+
 
 static void init() {
 	inited = true;
 #ifdef SIMULATOR
-	// TODO
+	// Nothing needs to be done
 #else
 	GPIO_InitTypeDef GPIO_InitStruct = { 0 };
 	/* Peripheral clock enable */
@@ -59,7 +64,7 @@ static void write(const char *buf, size_t len) {
 		init();
 	}
 #ifdef SIMULATOR
-	// TODO
+	fwrite(buf, sizeof(char), len, stdout);
 #else
 	HAL_UART_Transmit(&huart, (unsigned char*) buf, len, timeout);
 #endif
@@ -78,7 +83,16 @@ void debug_if(int condition, const char *format, ...) {
 #endif
 }
 
+void error(const char *format, ...) {
+#ifndef SIMULATOR
+	taskDISABLE_INTERRUPTS();
+#endif
+	char buf[256];
+	va_list args;
+	va_start(args, format);
+	int len = vsnprintf(buf, sizeof(buf), format, args);
+	va_end(args);
+	write(buf, len);
 
-void error(const char *format, ...){
-	// TODO
+	for(;;);
 }

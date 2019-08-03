@@ -5,69 +5,83 @@
  *      Author: caoyuan9642
  */
 
-#include <PlanetMoon.h>
+#include "PlanetMoon.h"
 #include <cmath>
 
 static const double DEGREE = M_PI / 180.0;
 static const double RADIAN = 180.0 / M_PI;
 
 static const double kepler[9][6] =
-{
+		{
 //			a(au)         e         I(deg)      L(deg)      wb(deg)     Omega(deg)
-		{ 0.38709927, 0.20563593, 7.00497902, 252.25032350, 77.45779628, 48.33076593 }, // Mercury
-		{ 0.72333566, 0.00677672, 3.39467605, 181.97909950, 131.60246718, 76.67984255 }, // Venus
-		{ 1.52371034, 0.09339410, 1.84969142, -4.55343205, -23.94362959, 49.55953891 }, // Mars
-		{ 5.20288700, 0.04838624, 1.30439695, 34.39644051, 14.72847983, 100.47390909 }, // Jupiter
-		{ 9.53667594, 0.05386179, 2.48599187, 49.95424423, 92.59887831, 113.66242448 }, // Saturn
-		{ 19.18916464, 0.04725744, 0.77263783, 313.23810451, 170.95427630, 74.01692503 }, // Uranus
-		{ 30.06992276, 0.00859048, 1.77004347, -55.12002969, 44.96476227, 131.78422574 }, // Neptune
-		{ 39.48211675, 0.24882730, 17.14001206, 238.92903833, 224.06891629, 110.30393684 }, // Pluto
+				{ 0.38709927, 0.20563593, 7.00497902, 252.25032350, 77.45779628,
+						48.33076593 }, // Mercury
+				{ 0.72333566, 0.00677672, 3.39467605, 181.97909950,
+						131.60246718, 76.67984255 }, // Venus
+				{ 1.52371034, 0.09339410, 1.84969142, -4.55343205, -23.94362959,
+						49.55953891 }, // Mars
+				{ 5.20288700, 0.04838624, 1.30439695, 34.39644051, 14.72847983,
+						100.47390909 }, // Jupiter
+				{ 9.53667594, 0.05386179, 2.48599187, 49.95424423, 92.59887831,
+						113.66242448 }, // Saturn
+				{ 19.18916464, 0.04725744, 0.77263783, 313.23810451,
+						170.95427630, 74.01692503 }, // Uranus
+				{ 30.06992276, 0.00859048, 1.77004347, -55.12002969,
+						44.96476227, 131.78422574 }, // Neptune
+				{ 39.48211675, 0.24882730, 17.14001206, 238.92903833,
+						224.06891629, 110.30393684 }, // Pluto
 
-		{ 1.00000261, 0.01671123, -0.00001531, 100.46457166, 102.93768193, 0.0 }, // Earth
+				{ 1.00000261, 0.01671123, -0.00001531, 100.46457166,
+						102.93768193, 0.0 }, // Earth
 		};
 
 static const double kepler_dt[9][6] =
-{
+		{
 //dt of: 	a(au)         e         I(deg)      L(deg)      wb(deg)     Omega(deg)
-		{ 0.00000037, 0.00001906, -0.00594749, 149472.67411175, 0.16047689, -0.12534081 }, // Mercury
-		{ 0.00000390, -0.00004107, -0.00078890, 58517.81538729, 0.00268329, -0.27769418 }, // Venus
-		{ 0.00001847, 0.00007882, -0.00813131, 19140.30268499, 0.44441088, -0.29257343 }, // Mars
-		{ -0.00011607, -0.00013253, -0.00183714, 3034.74612775, 0.21252668, 0.20469106 }, // Jupiter
-		{ -0.00125060, -0.00050991, 0.00193609, 1222.49362201, -0.41897216, -0.28867794 }, // Saturn
-		{ -0.00196176, -0.00004397, -0.00242939, 428.48202785, 0.40805281, 0.04240589 }, // Uranus
-		{ 0.00026291, 0.00005105, 0.00035372, 218.45945325, -0.32241464, -0.00508664 }, // Neptune
-		{ -0.00031596, 0.00005170, 0.00004818, 145.20780515, -0.04062942, -0.01183482 }, // Pluto
+				{ 0.00000037, 0.00001906, -0.00594749, 149472.67411175,
+						0.16047689, -0.12534081 }, // Mercury
+				{ 0.00000390, -0.00004107, -0.00078890, 58517.81538729,
+						0.00268329, -0.27769418 }, // Venus
+				{ 0.00001847, 0.00007882, -0.00813131, 19140.30268499,
+						0.44441088, -0.29257343 }, // Mars
+				{ -0.00011607, -0.00013253, -0.00183714, 3034.74612775,
+						0.21252668, 0.20469106 }, // Jupiter
+				{ -0.00125060, -0.00050991, 0.00193609, 1222.49362201,
+						-0.41897216, -0.28867794 }, // Saturn
+				{ -0.00196176, -0.00004397, -0.00242939, 428.48202785,
+						0.40805281, 0.04240589 }, // Uranus
+				{ 0.00026291, 0.00005105, 0.00035372, 218.45945325, -0.32241464,
+						-0.00508664 }, // Neptune
+				{ -0.00031596, 0.00005170, 0.00004818, 145.20780515,
+						-0.04062942, -0.01183482 }, // Pluto
 
-		{ 0.00000562, -0.00004392, -0.01294668, 35999.37244981, 0.32327364, 0.0 }, // Earth
+				{ 0.00000562, -0.00004392, -0.01294668, 35999.37244981,
+						0.32327364, 0.0 }, // Earth
 		};
 
-EquatorialCoordinatesWithDist PlanetMoon::calculatePosition(Object obj, time_t timestamp, LocationCoordinates loc)
-{
-	if (obj == MOON)
-	{
+EquatorialCoordinatesWithDist PlanetMoon::calculatePosition(Object obj,
+		time_t timestamp, LocationCoordinates loc) {
+	if (obj == MOON) {
 		// Precess back to J2000
 		// See https://www.cv.nrao.edu/~rfisher/Ephemerides/earth_rot.html
-		return calculateLunarPositionJNow(timestamp, loc).precessToJ2000(timestamp);
+		return calculateLunarPositionJNow(timestamp, loc).precessToJ2000(
+				timestamp);
 	}
 	EquatorialXYZ earth = calculatePlanetPosition(EARTH, timestamp);
-	if (obj == SUN)
-	{
+	if (obj == SUN) {
 		// By Definition
 		return (-earth).toSpherical();
-	}
-	else
-	{
+	} else {
 		EquatorialXYZ planet = calculatePlanetPosition(obj, timestamp);
 		return (planet - earth).toSpherical();
 	}
 }
 
-PlanetMoon::PlanetMoon()
-{
+PlanetMoon::PlanetMoon() {
 }
 
-EquatorialXYZ PlanetMoon::calculatePlanetPosition(Object obj, time_t timestamp)
-{
+EquatorialXYZ PlanetMoon::calculatePlanetPosition(Object obj,
+		time_t timestamp) {
 	// See https://ssd.jpl.nasa.gov/?planet_pos
 	EquatorialXYZ eq;
 	int index = (int) obj;
@@ -92,8 +106,7 @@ EquatorialXYZ PlanetMoon::calculatePlanetPosition(Object obj, time_t timestamp)
 	double E = M + e * sin(M);
 	double deltaE = 1e10;
 
-	while (deltaE > 1e-6 * DEGREE)
-	{
+	while (deltaE > 1e-6 * DEGREE) {
 		double deltaM = M - (E - e * sin(E));
 
 		deltaE = deltaM / (1 - e * cos(E));
@@ -104,8 +117,10 @@ EquatorialXYZ PlanetMoon::calculatePlanetPosition(Object obj, time_t timestamp)
 	double yp = a * sqrt(1 - e * e) * sin(E);
 
 	// Heliocentric coordinates
-	double xe = (cos(w) * cos(Omega) - sin(w) * sin(Omega) * cos(I)) * xp + (-sin(w) * cos(Omega) - cos(w) * sin(Omega) * cos(I)) * yp;
-	double ye = (cos(w) * sin(Omega) + sin(w) * cos(Omega) * cos(I)) * xp + (-sin(w) * sin(Omega) + cos(w) * cos(Omega) * cos(I)) * yp;
+	double xe = (cos(w) * cos(Omega) - sin(w) * sin(Omega) * cos(I)) * xp
+			+ (-sin(w) * cos(Omega) - cos(w) * sin(Omega) * cos(I)) * yp;
+	double ye = (cos(w) * sin(Omega) + sin(w) * cos(Omega) * cos(I)) * xp
+			+ (-sin(w) * sin(Omega) + cos(w) * cos(Omega) * cos(I)) * yp;
 	double ze = (sin(w) * sin(I)) * xp + (cos(w) * sin(I)) * yp;
 
 	// Equatorial coordinates
@@ -117,27 +132,27 @@ EquatorialXYZ PlanetMoon::calculatePlanetPosition(Object obj, time_t timestamp)
 	return eq;
 }
 
-EquatorialCoordinatesWithDist EquatorialXYZ::toSpherical() const
-{
+EquatorialCoordinatesWithDist EquatorialXYZ::toSpherical() const {
 	double dist = sqrt(x * x + y * y + z * z);
-	return EquatorialCoordinatesWithDist(asin(z / dist) * RADIAN, atan2(y, x) * RADIAN, dist);
+	return EquatorialCoordinatesWithDist(asin(z / dist) * RADIAN,
+			atan2(y, x) * RADIAN, dist);
 }
 
-EquatorialXYZ EquatorialCoordinatesWithDist::toXYZ() const
-{
-	return EquatorialXYZ(dist * cos(dec * DEGREE) * cos(ra * DEGREE), dist * cos(dec * DEGREE) * sin(ra * DEGREE), dist * sin(dec * DEGREE));
+EquatorialXYZ EquatorialCoordinatesWithDist::toXYZ() const {
+	return EquatorialXYZ(dist * cos(dec * DEGREE) * cos(ra * DEGREE),
+			dist * cos(dec * DEGREE) * sin(ra * DEGREE),
+			dist * sin(dec * DEGREE));
 }
 
-static inline double check(double x, double limit)
-{
+static inline double check(double x, double limit) {
 	if (fabs(x) < limit)
 		return limit;
 	else
 		return x;
 }
 
-EquatorialCoordinatesWithDist PlanetMoon::calculateLunarPositionJNow(time_t timestamp, LocationCoordinates loc)
-{
+EquatorialCoordinatesWithDist PlanetMoon::calculateLunarPositionJNow(
+		time_t timestamp, LocationCoordinates loc) {
 	// See http://stjarnhimlen.se/comp/tutorial.html
 	double D = (double) timestamp * 1.1574074074074E-5 + 2440587.5 - 2451543.5; // Date since Dec 31st 00:00:00 2000
 	// Moon elements
@@ -158,8 +173,7 @@ EquatorialCoordinatesWithDist PlanetMoon::calculateLunarPositionJNow(time_t time
 	double Em = Mm + ecm * sin(Mm) * (1 + ecm * cos(Mm));
 	double deltaE = 1e10;
 	// Newton's iteration
-	while (deltaE > 1e-6 * DEGREE)
-	{
+	while (deltaE > 1e-6 * DEGREE) {
 		deltaE = (Mm - (Em - ecm * sin(Em))) / (1 - ecm * cos(Em));
 		Em += deltaE;
 	}
@@ -167,8 +181,10 @@ EquatorialCoordinatesWithDist PlanetMoon::calculateLunarPositionJNow(time_t time
 	double yv = am * sqrt(1 - ecm * ecm) * sin(Em);
 	double vm = atan2(yv, xv);
 	double rm = sqrt(xv * xv + yv * yv);
-	double xh = rm * (cos(Nm) * cos(vm + wm) - sin(Nm) * sin(vm + wm) * cos(im));
-	double yh = rm * (sin(Nm) * cos(vm + wm) + cos(Nm) * sin(vm + wm) * cos(im));
+	double xh = rm
+			* (cos(Nm) * cos(vm + wm) - sin(Nm) * sin(vm + wm) * cos(im));
+	double yh = rm
+			* (sin(Nm) * cos(vm + wm) + cos(Nm) * sin(vm + wm) * cos(im));
 	double zh = rm * sin(vm + wm) * sin(im);
 	double lon = atan2(yh, xh);
 	double lat = atan2(zh, sqrt(xh * xh + yh * yh));
@@ -219,24 +235,30 @@ EquatorialCoordinatesWithDist PlanetMoon::calculateLunarPositionJNow(time_t time
 	double mpar = asin(1 / rm) * RADIAN; // Parallax angle in degrees
 	double gclat = loc.lat - 0.1924 * sin(2 * loc.lat * DEGREE); // Geometrical latitude at location
 	double rho = 0.99833 + 0.00167 * cos(2 * loc.lat * DEGREE); // Earth radius at location
-	double ha = CelestialMath::getLocalSiderealTime(timestamp, loc) - eqr.ra; // Hour angle in degrees
+	double ha = getLocalSiderealTime(timestamp, loc) - eqr.ra; // Hour angle in degrees
 
 	double g = atan2(tan(gclat * DEGREE), cos(ha * DEGREE)) * RADIAN; // aux angle in degrees
 
-	double tRA = eqr.ra - mpar * rho * cos(gclat * DEGREE) * sin(ha * DEGREE) / check(cos(eqr.dec * DEGREE), 1e-15);
+	double tRA = eqr.ra
+			- mpar * rho * cos(gclat * DEGREE) * sin(ha * DEGREE)
+					/ check(cos(eqr.dec * DEGREE), 1e-15);
 	double tDEC;
 	if (gclat == 0)
 		tDEC = eqr.dec - mpar * rho * sin(-eqr.dec * DEGREE) * cos(ha * DEGREE); // Limit of gclat->0
 	else
-		tDEC = eqr.dec - mpar * rho * sin(gclat * DEGREE) * sin((g - eqr.dec) * DEGREE) / sin(g * DEGREE);
+		tDEC = eqr.dec
+				- mpar * rho * sin(gclat * DEGREE) * sin((g - eqr.dec) * DEGREE)
+						/ sin(g * DEGREE);
 
 	return EquatorialCoordinatesWithDist(tDEC, tRA, rm * 12742.0 / 149597871.0); // Distance is in AU
 }
 
-MoonPhase PlanetMoon::getLunarPhase(time_t timestamp, const LocationCoordinates &loc, const EquatorialCoordinatesWithDist& moon)
-{
+MoonPhase PlanetMoon::getLunarPhase(time_t timestamp,
+		const LocationCoordinates &loc,
+		const EquatorialCoordinatesWithDist &moon) {
 	MoonPhase p;
-	EquatorialCoordinatesWithDist sun = PlanetMoon::calculatePosition(SUN, timestamp, loc);
+	EquatorialCoordinatesWithDist sun = PlanetMoon::calculatePosition(SUN,
+			timestamp, loc);
 //	double JD = (double) timestamp * 1.1574074074074E-5 + 2440587.5 - 2451545.0; // Days since J2000
 	EquatorialXYZ s = sun.toXYZ();
 	EquatorialXYZ m = moon.toXYZ();
@@ -253,7 +275,8 @@ MoonPhase PlanetMoon::getLunarPhase(time_t timestamp, const LocationCoordinates 
 
 	// Calculate orientation of illumination
 	double Y = cos(Delta) * sin(Phi - moon.ra * DEGREE);
-	double X = sin(moon.dec * DEGREE) * cos(Delta) * cos(Phi - moon.ra * DEGREE) - cos(moon.dec * DEGREE) * sin(Delta);
+	double X = sin(moon.dec * DEGREE) * cos(Delta) * cos(Phi - moon.ra * DEGREE)
+			- cos(moon.dec * DEGREE) * sin(Delta);
 	p.illumaxis = atan2(Y, X) * RADIAN + 180.0;
 
 	// Calculate illumination angle. When we set the illumaxis to upward direction, the sun should always be on the RIGHT side of the moon

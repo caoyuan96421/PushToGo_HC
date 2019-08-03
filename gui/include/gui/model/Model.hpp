@@ -2,6 +2,10 @@
 #define MODEL_HPP
 
 #include <ctime>
+#include "CelestialMath.h"
+#include "PlanetMoon.h"
+#include "TelescopeBackend.h"
+#include "StarCatalog.h"
 
 class ModelListener;
 
@@ -38,10 +42,54 @@ public:
 	 */
 	void tick();
 
+//	time_t getTime();
+
+	EquatorialCoordinates getEqCoords();
+	MountCoordinates getMountCoords();
+	LocationCoordinates getLocation();
+	int getTimeZone();
+//	TelescopeBackend::mountstatus_t getStatus();
+//	void track(bool);
+	void syncNow()
+	{
+		syncImm = true;
+	}
+
+//	int getConfigString(const char *config, char *buf, int size);
+//	int getConfigInt(const char *config);
+//	double getConfigDouble(const char *config);bool getConfigBool(const char *config);
+//
+//	void setSpeed(const char *type, double speedSidereal);
+//	double getSpeed(const char *type);
+//
+//	int getConfigAll(ConfigItem *configs, int maxConfig);
+//	void writeConfig(ConfigItem *config);
+
+	void useKingRate(bool use)
+	{
+		king = use;
+	}
+	bool isUseKingRate()
+	{
+		return king;
+	}
+
+	// Get mount information
+//    double getRA();
+//    double getDEC();
+//    double getSpeed();
+//
+//    int goTo(double ra, double dec);
+
 protected:
 	/**
 	 * Pointer to the currently active presenter.
 	 */
+	volatile bool syncImm;bool king;
+	EquatorialCoordinates eq_coord;
+	MountCoordinates mount_coord;
+	LocationCoordinates location;
+	int timezone;
 	ModelListener* modelListener;
 };
 

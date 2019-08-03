@@ -43,7 +43,7 @@ public:
     typedef meta::select_type_maxsize< CombinedPresenterTypes >::type MaxPresenterType;
 
     /* Calculate largest transition, both from generated and user-defined typelists */
-    typedef meta::select_type_maxsize< UserDefinedTransitionTypes >::type MaxUserTransitionType;
+    typedef meta::select_type_maxsize< UserDefinedTransitionTypes >::type MaxUserTransitionType;                            
 
     typedef meta::TypeList< MaxGeneratedTransitionType,
             meta::TypeList< MaxUserTransitionType,
@@ -71,4 +71,4 @@ private:
     }
 };
 
-#endif // FRONTENDHEAP_HPP
+#endif // FRONTENDHEAP_HPP 

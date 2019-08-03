@@ -690,7 +690,7 @@
             <File>
               <FileName>AccordionMenu.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>../../gui/widgets/accordionmenu.cpp</FilePath>
+              <FilePath>../../gui/src/widgets/accordionmenu.cpp</FilePath>
             </File>
             <File>
               <FileName>AlignScreenPresenter.cpp</FileName>
@@ -715,12 +715,12 @@
             <File>
               <FileName>ButtonItem.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>../../gui/widgets/buttonitem.cpp</FilePath>
+              <FilePath>../../gui/src/widgets/buttonitem.cpp</FilePath>
             </File>
             <File>
               <FileName>ConfigButton.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>../../gui/widgets/configbutton.cpp</FilePath>
+              <FilePath>../../gui/src/widgets/configbutton.cpp</FilePath>
             </File>
             <File>
               <FileName>ConfigPopup.cpp</FileName>
@@ -780,7 +780,7 @@
             <File>
               <FileName>NumericalWheelSelector.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>../../gui/widgets/numericalwheelselector.cpp</FilePath>
+              <FilePath>../../gui/src/widgets/numericalwheelselector.cpp</FilePath>
             </File>
             <File>
               <FileName>PolarAlignScreenPresenter.cpp</FileName>
@@ -815,7 +815,7 @@
             <File>
               <FileName>StarMapWidget.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>../../gui/widgets/starmapwidget.cpp</FilePath>
+              <FilePath>../../gui/src/widgets/starmapwidget.cpp</FilePath>
             </File>
             <File>
               <FileName>UtilityScreenPresenter.cpp</FileName>
@@ -830,7 +830,7 @@
             <File>
               <FileName>WheelSelector.cpp</FileName>
               <FileType>8</FileType>
-              <FilePath>../../gui/widgets/wheelselector.cpp</FilePath>
+              <FilePath>../../gui/src/widgets/wheelselector.cpp</FilePath>
             </File>
           </Files>
         </Group>

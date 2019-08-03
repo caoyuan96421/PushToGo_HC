@@ -3,12 +3,13 @@
 
 #include <gui/model/ModelListener.hpp>
 #include <mvp/Presenter.hpp>
+#include <gui/basescreen_screen/BaseScreenPresenter.hpp>
 
 using namespace touchgfx;
 
 class PolarAlignScreenView;
 
-class PolarAlignScreenPresenter : public Presenter, public ModelListener
+class PolarAlignScreenPresenter : public BaseScreenPresenter
 {
 public:
     PolarAlignScreenPresenter(PolarAlignScreenView& v);

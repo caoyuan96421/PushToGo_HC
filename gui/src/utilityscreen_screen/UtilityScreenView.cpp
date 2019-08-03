@@ -2,15 +2,15 @@
 
 UtilityScreenView::UtilityScreenView()
 {
-
+	baseview.addTo(&container);
 }
 
 void UtilityScreenView::setupScreen()
 {
-    UtilityScreenViewBase::setupScreen();
+
 }
 
 void UtilityScreenView::tearDownScreen()
 {
-    UtilityScreenViewBase::tearDownScreen();
+
 }

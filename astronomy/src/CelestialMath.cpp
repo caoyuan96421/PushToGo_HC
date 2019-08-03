@@ -6,10 +6,11 @@
  */
 
 #include "CelestialMath.h"
+#include "Debug.h"
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include "mbed.h"
+#include <string.h>
 
 #define CM_DEBUG 0
 
@@ -71,17 +72,17 @@ MountCoordinates::MountCoordinates(double dec, double ra, pierside_t s) :
 		dec_delta(dec), ra_delta(ra), side(s) {
 }
 
-MountCoordinates MountCoordinates::operator+(const IndexOffset& offset) const {
+MountCoordinates MountCoordinates::operator+(const IndexOffset &offset) const {
 	return MountCoordinates(remainder(dec_delta + offset.dec_off, 360),
 			remainder(ra_delta + offset.ra_off, 360), side);
 }
 
-MountCoordinates MountCoordinates::operator-(const IndexOffset& offset) const {
+MountCoordinates MountCoordinates::operator-(const IndexOffset &offset) const {
 	return MountCoordinates(remainder(dec_delta - offset.dec_off, 360),
 			remainder(ra_delta - offset.ra_off, 360), side);
 }
 
-AlignmentStar::AlignmentStar(const EquatorialCoordinates& ref,
+AlignmentStar::AlignmentStar(const EquatorialCoordinates &ref,
 		MountCoordinates meas, double t) :
 		star_ref(ref), star_meas(meas), timestamp(t) {
 }
@@ -90,7 +91,7 @@ EqCalibration::EqCalibration() :
 		cone(0), error(0) {
 }
 
-EqCalibration::EqCalibration(const IndexOffset& off,
+EqCalibration::EqCalibration(const IndexOffset &off,
 		const AzimuthalCoordinates p, double c, double e) :
 		offset(off), pa(p), cone(c), error(e) {
 }
@@ -172,7 +173,7 @@ EquatorialCoordinates LocalEquatorialCoordinates::toEquatorial(double timestamp,
 			remainder(getLocalSiderealTime(timestamp, loc) - ha, 360.0));
 }
 
-Transformation &Transformation::getMisalignedPolarAxisTransformation(
+Transformation& Transformation::getMisalignedPolarAxisTransformation(
 		const AzimuthalCoordinates &p, const LocationCoordinates &loc) {
 	double c1 = cos(p.azi * DEGREE), c2 = cos(p.alt * DEGREE), c3 = cos(
 			loc.lat * DEGREE);
@@ -192,7 +193,7 @@ Transformation &Transformation::getMisalignedPolarAxisTransformation(
 }
 
 LocalEquatorialCoordinates LocalEquatorialCoordinates::applyPolarMisalignment(
-		const Transformation& t) const {
+		const Transformation &t) const {
 	double c1 = cos(dec * DEGREE), c2 = cos(ha * DEGREE);
 	double s1 = sin(dec * DEGREE), s2 = sin(ha * DEGREE);
 	CartesianVector X = CartesianVector(c1 * c2, -c1 * s2, s1) * t;
@@ -202,7 +203,7 @@ LocalEquatorialCoordinates LocalEquatorialCoordinates::applyPolarMisalignment(
 }
 
 LocalEquatorialCoordinates LocalEquatorialCoordinates::deapplyPolarMisalignment(
-		const Transformation& t) const {
+		const Transformation &t) const {
 // the Transformation is ORTHOGONAL, T^-1 = T'
 	double c1 = cos(dec * DEGREE), c2 = cos(ha * DEGREE);
 	double s1 = sin(dec * DEGREE), s2 = sin(ha * DEGREE);
@@ -215,14 +216,14 @@ LocalEquatorialCoordinates LocalEquatorialCoordinates::deapplyPolarMisalignment(
 }
 
 LocalEquatorialCoordinates LocalEquatorialCoordinates::applyPolarMisalignment(
-		const AzimuthalCoordinates& mpa, const LocationCoordinates& loc) const {
+		const AzimuthalCoordinates &mpa, const LocationCoordinates &loc) const {
 	Transformation tr;
 	tr.getMisalignedPolarAxisTransformation(mpa, loc);
 	return applyPolarMisalignment(tr);
 }
 
 LocalEquatorialCoordinates LocalEquatorialCoordinates::deapplyPolarMisalignment(
-		const AzimuthalCoordinates& mpa, const LocationCoordinates& loc) const {
+		const AzimuthalCoordinates &mpa, const LocationCoordinates &loc) const {
 	Transformation tr;
 	tr.getMisalignedPolarAxisTransformation(mpa, loc);
 	return deapplyPolarMisalignment(tr);
@@ -283,8 +284,8 @@ IndexOffset alignOneStarForOffset(const AlignmentStar &star,
 }
 
 double alignTwoStars(const AlignmentStar stars[],
-		const LocationCoordinates& loc, AzimuthalCoordinates& pa,
-		IndexOffset& offset) {
+		const LocationCoordinates &loc, AzimuthalCoordinates &pa,
+		IndexOffset &offset) {
 	// Initialize the PA and offset
 	pa.alt = loc.lat;
 	pa.azi = 0;
@@ -387,15 +388,6 @@ static double jac[20][5]; // can maximally hold 10 stars
 static double jacjac[5][5]; // J'J
 static double invj[5][5];
 
-static void fill_jacobian(const int N, const int j,
-		LocalEquatorialCoordinates stars0[],
-		LocalEquatorialCoordinates stars1[], const double &dd) {
-	for (int i = 0; i < N; i++) {
-		jac[i * 2][j] = (stars1[i].dec - stars0[i].dec) / dd;
-		jac[i * 2 + 1][j] = (stars1[i].ha - stars0[i].ha) / dd;
-	}
-}
-
 static double det33(int a1, int a2, int a3, int b1, int b2, int b3) {
 	return jacjac[a1][b1] * jacjac[a2][b2] * jacjac[a3][b3]
 			+ jacjac[a1][b2] * jacjac[a2][b3] * jacjac[a3][b1]
@@ -462,8 +454,8 @@ static inline double sqr(double x) {
 
 static void get_corrected_coords(const int N, MountCoordinates mcs[],
 		const LocalEquatorialCoordinates star_ref_local[],
-		const MountCoordinates star_meas[], const LocationCoordinates& loc,
-		const AzimuthalCoordinates& pa, const IndexOffset& offset,
+		const MountCoordinates star_meas[], const LocationCoordinates &loc,
+		const AzimuthalCoordinates &pa, const IndexOffset &offset,
 		double cone) {
 	static Transformation t;
 	t.getMisalignedPolarAxisTransformation(pa, loc);
@@ -482,8 +474,8 @@ static void fill_jacobian(const int N, const int j, MountCoordinates stars0[],
 }
 
 double alignNStars(const int N, const AlignmentStar stars[],
-		const LocationCoordinates& loc, AzimuthalCoordinates& pa,
-		IndexOffset& offset, double& cone) {
+		const LocationCoordinates &loc, AzimuthalCoordinates &pa,
+		IndexOffset &offset, double &cone) {
 	if (N == 2) {
 		cone = 0;
 		return alignTwoStars(stars, loc, pa, offset);
@@ -629,7 +621,7 @@ EqCalibration alignAuto(const int N, const AlignmentStar stars[],
 	return calib;
 }
 
-double parseHMSAngle(char* hms) {
+double parseHMSAngle(char *hms) {
 	char *h = strchr(hms, 'h');
 	char *m = strchr(hms, 'm');
 	char *s = strchr(hms, 's');
@@ -663,7 +655,7 @@ double parseHMSAngle(char* hms) {
 	return remainder((hour + minute / 60.0 + second / 3600.0) * 15, 360);
 }
 
-double parseDMSAngle(char* dms) {
+double parseDMSAngle(char *dms) {
 	char *d = strchr(dms, 'd');
 	char *m = strchr(dms, 'm');
 	char *s = strchr(dms, 's');
@@ -716,4 +708,36 @@ double kingRate(EquatorialCoordinates eq, LocationCoordinates loc,
 							/ pow(sinLat * sinDec + cosLat * cosDec * cosHA,
 									2.0) - cotLat * tanDec * cosHA));
 	return 6.0 / kingMpD;
+}
+
+EquatorialCoordinates EquatorialCoordinates::precessFromJ2000(
+		time_t timestamp) {
+	double JD = (double) timestamp * 1.1574074074074E-5 + 2440587.5 - 2451545.0; // Julian date since J2000
+	double Y = JD / 365.25; // Year since J2000
+	// RA/DEC at date
+	double RA = ra
+			+ (3.075 + 1.336 * sin(ra * DEGREE) * tan(dec * DEGREE)) * Y
+					/ 240.0;
+	double DEC = dec + 20.04 * cos(ra * DEGREE) * Y / 3600.0;
+	return EquatorialCoordinates(DEC, RA);
+}
+
+EquatorialCoordinates EquatorialCoordinates::precessToJ2000(time_t timestamp) {
+	double JD = (double) timestamp * 1.1574074074074E-5 + 2440587.5 - 2451545.0; // Julian date since J2000
+	double Y = JD / 365.25; // Year since J2000
+	// RA/DEC at J2000
+	double RA = ra
+			- (3.075 + 1.336 * sin(ra * DEGREE) * tan(dec * DEGREE)) * Y
+					/ 240.0;
+	double DEC = dec - 20.04 * cos(ra * DEGREE) * Y / 3600.0;
+	return EquatorialCoordinates(DEC, RA);
+}
+void EquatorialCoordinates::print(char *buf, int len) {
+	char we = (ra > 0) ? 'E' : 'W';
+	char ns = (dec > 0) ? 'N' : 'S';
+	double r = (ra < 0) ? ra + 360.0 : ra;
+	double d = fabs(dec);
+	snprintf(buf, len, "%dh%dm%.2fs %c, %d %d'%.2f\" %c", int(r / 15),
+			int(fmod(r, 15.0) * 4), fmod(r, 0.25) * 240, we, int(d),
+			int(fmod(d, 1.0) * 60), fmod(d, 1.0 / 60) * 3600, ns);
 }

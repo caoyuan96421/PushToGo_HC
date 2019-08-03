@@ -3,6 +3,7 @@
 
 #include <gui/model/Model.hpp>
 #include <ctime>
+#include "CelestialMath.h"
 
 /**
  * ModelListener is the interface through which the Model can inform the currently
@@ -34,6 +35,13 @@ public:
 		model = m;
 	}
 
+	virtual void setTime(time_t timestamp, int tz)
+	{
+	}
+
+	virtual void setCoords(const EquatorialCoordinates &eq, const MountCoordinates &meq)
+	{
+	}
 protected:
 	Model* model;
 };

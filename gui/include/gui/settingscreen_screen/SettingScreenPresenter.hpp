@@ -2,13 +2,14 @@
 #define SETTINGSCREEN_PRESENTER_HPP
 
 #include <gui/model/ModelListener.hpp>
+#include <gui/basescreen_screen/BaseScreenPresenter.hpp>
 #include <mvp/Presenter.hpp>
 
 using namespace touchgfx;
 
 class SettingScreenView;
 
-class SettingScreenPresenter : public Presenter, public ModelListener
+class SettingScreenPresenter : public BaseScreenPresenter
 {
 public:
     SettingScreenPresenter(SettingScreenView& v);
@@ -26,6 +27,7 @@ public:
     virtual void deactivate();
 
     virtual ~SettingScreenPresenter() {};
+
 
 private:
     SettingScreenPresenter();

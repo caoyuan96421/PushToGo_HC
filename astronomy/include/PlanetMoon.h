@@ -5,8 +5,8 @@
  *      Author: caoyuan9642
  */
 
-#ifndef ASTRONOMY_PLANETMOON_H_
-#define ASTRONOMY_PLANETMOON_H_
+#ifndef _PLANETMOON_H_
+#define _PLANETMOON_H_
 
 #include "CelestialMath.h"
 
@@ -185,10 +185,9 @@ private:
 	PlanetMoon();
 	virtual ~PlanetMoon()
 	{
-		// TODO Auto-generated destructor stub
 	}
 
 	static EquatorialXYZ calculatePlanetPosition(Object obj, time_t timestamp);
 };
 
-#endif /* ASTRONOMY_PLANETMOON_H_ */
+#endif /* _PLANETMOON_H_ */

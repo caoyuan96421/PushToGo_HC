@@ -8,8 +8,34 @@
 #ifndef TELESCOPEBACKEND_H_
 #define TELESCOPEBACKEND_H_
 
-#include "mbed.h"
 #include "CelestialMath.h"
+#include "string.h"
+#include "time.h"
+
+
+#ifndef SIMULATOR
+
+#include "FreeRTOS.h"
+#include "queue.h"
+#include "task.h"
+#include "semphr.h"
+
+#endif
+
+
+#ifdef SIMULATOR
+#include <sys/time.h>
+inline unsigned long millisec() {
+    struct timeval te;
+    gettimeofday(&te, NULL); // get current time
+    long long milliseconds = te.tv_sec*1000LL + te.tv_usec/1000; // calculate milliseconds
+    return milliseconds;
+}
+
+#define get_millisec_time	millisec
+#else
+#define get_millisec_time	xTaskGetTickCount
+#endif
 
 typedef enum
 {
@@ -102,6 +128,8 @@ public:
 
 	static void initialize();
 
+	static void setTime(time_t);
+	static time_t getTime();
 	static int syncTime();
 	static int getEqCoords(EquatorialCoordinates &);
 	static int getMountCoords(MountCoordinates &);

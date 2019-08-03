@@ -3,12 +3,13 @@
 
 #include <gui/model/ModelListener.hpp>
 #include <mvp/Presenter.hpp>
+#include <gui/basescreen_screen/BaseScreenPresenter.hpp>
 
 using namespace touchgfx;
 
 class UtilityScreenView;
 
-class UtilityScreenPresenter : public Presenter, public ModelListener
+class UtilityScreenPresenter : public BaseScreenPresenter
 {
 public:
     UtilityScreenPresenter(UtilityScreenView& v);

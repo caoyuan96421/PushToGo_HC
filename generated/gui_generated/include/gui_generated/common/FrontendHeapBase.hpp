@@ -10,7 +10,7 @@
 #include <touchgfx/transitions/NoTransition.hpp>
 #include <touchgfx/transitions/SlideTransition.hpp>
 #include <touchgfx/transitions/SlideTransition.hpp>
-#include <touchgfx/transitions/SlideTransition.hpp>
+
 #include <touchgfx/transitions/SlideTransition.hpp>
 #include <touchgfx/transitions/SlideTransition.hpp>
 #include <touchgfx/transitions/SlideTransition.hpp>

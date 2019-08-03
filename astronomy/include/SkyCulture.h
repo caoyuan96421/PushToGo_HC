@@ -5,8 +5,8 @@
  *      Author: caoyuan9642
  */
 
-#ifndef ASTRONOMY_SKYCULTURE_H_
-#define ASTRONOMY_SKYCULTURE_H_
+#ifndef _SKYCULTURE_H_
+#define _SKYCULTURE_H_
 
 #include "StarCatalog.h"
 

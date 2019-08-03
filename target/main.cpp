@@ -45,6 +45,8 @@ using namespace touchgfx;
 
 #include "Debug.h"
 #include "Comm.h"
+#include "TelescopeBackend.h"
+#include "StarCatalog.h"
 
 /**
  * Define the FreeRTOS task priorities and stack sizes
@@ -59,28 +61,28 @@ static void GUITask(void *params) {
 	touchgfx::HAL::getInstance()->taskEntry();
 }
 
-static void pokeTask(void*) {
-	int i = 0;
-	while (true) {
-//		vTaskDelay(50);
-//		debug_if(true, "%d\r\n", i++);
-		Comm::printf("%d\r\n", i++);
-	}
-}
-
+//static void pokeTask(void*) {
+//	int i = 0;
+//	while (true) {
+////		vTaskDelay(50);
+////		debug_if(true, "%d\r\n", i++);
+//		Comm::printf("%d\r\n", i++);
+//	}
+//}
+//
 static void readTask(void*){
-	char ret[10];
 	while(1){
-		int len = Comm::read(ret, sizeof(ret)-1);
-		ret[len] = '\0';
-		debug_if(true, "%s", ret);
+		time_t t = TelescopeBackend::getTime();
+		char buf[256];
+		ctime_r(&t, buf);
+		debug_if(true, "%s\r\n", buf);
+		vTaskDelay(1000);
 	}
 }
 
 int main(void) {
 	hw_init();
 	touchgfx_init();
-	Comm::init();
 
 	/**
 	 * IMPORTANT NOTICE!
@@ -107,9 +109,9 @@ int main(void) {
 	xTaskCreate(GUITask, (TASKCREATE_NAME_TYPE)"GUITask",
 			configGUI_TASK_STK_SIZE, NULL, configGUI_TASK_PRIORITY, NULL);
 
-	xTaskCreate(pokeTask, (TASKCREATE_NAME_TYPE)"pokeTask",
-				1024, NULL, configGUI_TASK_PRIORITY-1, NULL);
-
+//	xTaskCreate(pokeTask, (TASKCREATE_NAME_TYPE)"pokeTask",
+//				1024, NULL, configGUI_TASK_PRIORITY-1, NULL);
+//
 	xTaskCreate(readTask, (TASKCREATE_NAME_TYPE)"readTask",
 					1024, NULL, configGUI_TASK_PRIORITY-1, NULL);
 

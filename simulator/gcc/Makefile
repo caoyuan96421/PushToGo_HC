@@ -35,7 +35,7 @@ all clean assets:
 # Additional components can be added to this list. make will look for
 # source files recursively in comp_name/src and setup an include directive
 # for comp_name/include.
-components := gui simulator generated/gui_generated
+components := gui simulator generated/gui_generated astronomy
 
 # Location of folder containing bmp/png files.
 asset_images_input  := assets/images
@@ -98,7 +98,7 @@ cpp_compiler         := g++
 cpp_compiler_options += -g -DSIMULATOR='' -DENABLE_LOG
 linker               := g++
 
-WARN = error all extra write-strings init-self cast-qual \
+WARN = all extra write-strings init-self cast-qual \
        pointer-arith strict-aliasing format=2 uninitialized \
        missing-declarations no-long-long no-unused-parameter \
        no-variadic-macros no-format-extra-args \

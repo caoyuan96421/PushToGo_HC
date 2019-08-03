@@ -5,8 +5,8 @@
  *      Author: caoyuan9642
  */
 
-#ifndef ASTRONOMY_STARCATALOG_H_
-#define ASTRONOMY_STARCATALOG_H_
+#ifndef _STARCATALOG_H_
+#define _STARCATALOG_H_
 
 #include <cstdlib>
 #include <cmath>
@@ -164,7 +164,7 @@ class StarCatalog
 public:
 	static StarCatalog &getInstance()
 	{
-		static StarCatalog instance;
+
 		return instance;
 	}
 
@@ -173,14 +173,16 @@ public:
 
 	StarInfo *searchByCoordinates(float ra, float dec, float maxdist = 0.01f);
 	StarInfo *searchByID(int id);
+	void constructTree();
 
 private:
+	static StarCatalog instance;
 	StarCatalog();
 	virtual ~StarCatalog()
 	{
 	}
 
-	static void constructTree();
+
 };
 
-#endif /* ASTRONOMY_STARCATALOG_H_ */
+#endif /* _STARCATALOG_H_ */

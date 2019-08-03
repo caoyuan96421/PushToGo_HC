@@ -3,12 +3,13 @@
 
 #include <gui/model/ModelListener.hpp>
 #include <mvp/Presenter.hpp>
+#include <gui/basescreen_screen/BaseScreenPresenter.hpp>
 
 using namespace touchgfx;
 
 class AlignScreenView;
 
-class AlignScreenPresenter : public Presenter, public ModelListener
+class AlignScreenPresenter : public BaseScreenPresenter
 {
 public:
     AlignScreenPresenter(AlignScreenView& v);

@@ -42,6 +42,13 @@ struct EquatorialCoordinates {
 	EquatorialCoordinates(double d = 0, double r = 0);
 	LocalEquatorialCoordinates toLocalEquatorialCoordinates(double timestamp,
 			const LocationCoordinates &loc) const; // Convert to local equatorial
+
+	void print(char *buf, int len);
+	/**
+	 * Precess from and to J2000 using date specified by the timestamp
+	 */
+	EquatorialCoordinates precessFromJ2000(time_t timestamp);
+	EquatorialCoordinates precessToJ2000(time_t timestamp);
 };
 
 /**
@@ -228,7 +235,7 @@ double alignTwoStars(const AlignmentStar stars[],
  * @param cone Initial cone error. This parameter will be updated with new values
  * @return residue of alignment, +Inf if diverged
  */
-static double alignNStars(const int N,
+double alignNStars(const int N,
 		const LocalEquatorialCoordinates star_ref[],
 		const MountCoordinates star_meas[], const LocationCoordinates &loc,
 		AzimuthalCoordinates &pa, IndexOffset &offset, double &cone);
@@ -266,7 +273,7 @@ double parseDMSAngle(char *dms);
 /**
  * Calculate King tracking rate based on the star position and location
  */
-static double kingRate(EquatorialCoordinates eq, LocationCoordinates loc,
+double kingRate(EquatorialCoordinates eq, LocationCoordinates loc,
 		double time);
 
 #endif /* _CELESTIALMATH_H_ */
