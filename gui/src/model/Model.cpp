@@ -6,6 +6,7 @@ Model::Model() :
 {
 	StarCatalog::getInstance().constructTree(); // Init star catalog
 	TelescopeBackend::initialize();
+	SkyCulture::getInstance().init();
 	syncImm = true;
 	king = false;
 	timezone = 0;

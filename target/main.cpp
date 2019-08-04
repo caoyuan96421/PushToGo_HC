@@ -70,6 +70,7 @@ static void GUITask(void *params) {
 //	}
 //}
 //
+
 static void readTask(void*){
 	while(1){
 		time_t t = TelescopeBackend::getTime();
@@ -79,6 +80,7 @@ static void readTask(void*){
 		vTaskDelay(1000);
 	}
 }
+
 
 int main(void) {
 	hw_init();

@@ -6,6 +6,7 @@
 #include "PlanetMoon.h"
 #include "TelescopeBackend.h"
 #include "StarCatalog.h"
+#include "SkyCulture.h"
 
 class ModelListener;
 

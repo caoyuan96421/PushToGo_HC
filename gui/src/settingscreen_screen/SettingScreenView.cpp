@@ -69,6 +69,9 @@ void SettingScreenView::setupScreen_delayed(void *param)
 		view->mount_menu->addItem(*view->abuttons[i], view->configCallback);
 	}
 	view->mount_menu->invalidate();
+#ifndef SIMULATOR
+	vTaskDelete(NULL);
+#endif
 }
 
 void SettingScreenView::tearDownScreen()

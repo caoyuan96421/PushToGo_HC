@@ -128,11 +128,8 @@ public:
 		Segment *segment;
 	};
 
-	static SkyCulture &getInstance()
-	{
-		static SkyCulture inst;
-		return inst;
-	}
+	static SkyCulture &getInstance();
+	static void init();
 
 	static void resetIterator(Iterator &it)
 	{
@@ -145,8 +142,14 @@ public:
 	}
 
 private:
+
+	static SkyCulture instance;
+
 	SkyCulture();
 	virtual ~SkyCulture();
+
+	SkyCulture(SkyCulture const&);
+    void operator=(SkyCulture const&);
 
 	void _resetIterator(Iterator &it);
 	Segment *_nextSegment(Iterator &it);

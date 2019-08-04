@@ -77,7 +77,7 @@ extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
 extern "C" void USART6_IRQHandler() {
 	uint8_t *ptr = huart.pRxBuffPtr;
 	portBASE_TYPE px = pdFALSE;
-	bool was_tx_ongoing = (huart.State & HAL_UART_STATE_BUSY_TX);
+	bool was_tx_ongoing = (huart.State & HAL_UART_STATE_BUSY_TX) == HAL_UART_STATE_BUSY_TX;
 	tx_complete = false;
 	rx_error = false;
 
@@ -85,7 +85,7 @@ extern "C" void USART6_IRQHandler() {
 	HAL_UART_IRQHandler(&huart);
 
 	// Error codes
-	if (huart.ErrorCode != HAL_UART_ERROR_NONE) {
+	if (rx_error) {
 
 		if (was_tx_ongoing && !tx_complete) {
 			// TX ongoing but not finished yet, we should continue even though there is an error in RX
