@@ -8,8 +8,8 @@ BaseScreenPresenter::BaseScreenPresenter(BaseScreenView& v) :
 
 void BaseScreenPresenter::activate()
 {
-	view.setTime(TelescopeBackend::getTime(), model->getTimeZone());
-	view.setEqCoords(model->getEqCoords());
+	view.setTime(TelescopeBackend::getTime(), TelescopeBackend::getTimeZone());
+	view.setEqCoords(TelescopeBackend::getEqCoords());
 }
 
 void BaseScreenPresenter::deactivate()

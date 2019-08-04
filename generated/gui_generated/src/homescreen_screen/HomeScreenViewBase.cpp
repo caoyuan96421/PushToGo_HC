@@ -99,8 +99,8 @@ void HomeScreenViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& s
     {
         //Interaction3
         //When starmap_view clicked change screen to StarMapScreen
-        //Go to StarMapScreen with no screen transition
-        application().gotoStarMapScreenScreenNoTransition();
+        //Go to StarMapScreen with screen transition towards North
+        application().gotoStarMapScreenScreenCoverTransitionNorth();
     }
     else if (&src == &setting_view)
     {

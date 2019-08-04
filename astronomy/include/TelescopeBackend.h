@@ -131,8 +131,11 @@ public:
 	static void setTime(time_t);
 	static time_t getTime();
 	static int syncTime();
-	static int getEqCoords(EquatorialCoordinates &);
-	static int getMountCoords(MountCoordinates &);
+	static EquatorialCoordinates getEqCoords();
+	static MountCoordinates getMountCoords();
+	static LocationCoordinates getLocation();
+	static int getTimeZone();
+
 
 	static int getConfigAll(ConfigItem *, int);
 	static int getConfigString(const char *config, char *buf, int size);

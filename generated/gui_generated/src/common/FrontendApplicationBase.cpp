@@ -106,15 +106,15 @@ void FrontendApplicationBase::gotoSettingScreenScreenSlideTransitionEastImpl()
 
 // StarMapScreen
 
-void FrontendApplicationBase::gotoStarMapScreenScreenNoTransition()
+void FrontendApplicationBase::gotoStarMapScreenScreenCoverTransitionNorth()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoStarMapScreenScreenNoTransitionImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoStarMapScreenScreenCoverTransitionNorthImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
-void FrontendApplicationBase::gotoStarMapScreenScreenNoTransitionImpl()
+void FrontendApplicationBase::gotoStarMapScreenScreenCoverTransitionNorthImpl()
 {
-    makeTransition<StarMapScreenView, StarMapScreenPresenter, touchgfx::NoTransition, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+    makeTransition<StarMapScreenView, StarMapScreenPresenter, touchgfx::CoverTransition<NORTH>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
 }
 
 // UtilityScreen

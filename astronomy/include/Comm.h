@@ -10,6 +10,8 @@
 
 #include <cstdio>
 
+// Communication class
+// Note: this class is NOT thread safe. Make sure all calls of read are from the same thread, for write as well. Or use other lock methods
 class Comm {
 public:
 	static void init();

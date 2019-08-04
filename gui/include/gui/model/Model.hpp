@@ -45,16 +45,16 @@ public:
 
 //	time_t getTime();
 
-	EquatorialCoordinates getEqCoords();
-	MountCoordinates getMountCoords();
-	LocationCoordinates getLocation();
-	int getTimeZone();
+//	EquatorialCoordinates getEqCoords();
+//	MountCoordinates getMountCoords();
+//	LocationCoordinates getLocation();
+//	int getTimeZone();
 //	TelescopeBackend::mountstatus_t getStatus();
 //	void track(bool);
-	void syncNow()
-	{
-		syncImm = true;
-	}
+//	void syncNow()
+//	{
+//		syncImm = true;
+//	}
 
 //	int getConfigString(const char *config, char *buf, int size);
 //	int getConfigInt(const char *config);

@@ -2,48 +2,28 @@
 #include <gui/model/ModelListener.hpp>
 
 Model::Model() :
-		modelListener(0)
-{
+		modelListener(0) {
 	StarCatalog::getInstance().constructTree(); // Init star catalog
 	TelescopeBackend::initialize();
 	SkyCulture::getInstance().init();
-	syncImm = true;
 	king = false;
 	timezone = 0;
 }
 
-void Model::tick()
-{
-	static int timeupdate = 0;
-	static int timesync = 0;
-	if (modelListener)
-	{
-		if (timeupdate-- == 0)
-		{
+static int timeupdate = 0;
+
+void Model::tick() {
+	if (modelListener) {
+		if (timeupdate-- == 0) {
 			// Update time every 10 ticks
 			modelListener->setTime(TelescopeBackend::getTime(), timezone);
 			EquatorialCoordinates new_coords;
 			MountCoordinates new_coords_mount;
-			if (TelescopeBackend::getEqCoords(new_coords) == 0)
-			{
-				eq_coord = new_coords;
-			}
-			if (TelescopeBackend::getMountCoords(new_coords_mount) == 0)
-			{
-				mount_coord = new_coords_mount;
-			}
+			eq_coord = TelescopeBackend::getEqCoords();
+			mount_coord = TelescopeBackend::getMountCoords();
 
 			modelListener->setCoords(eq_coord, mount_coord);
 			timeupdate = 10;
-		}
-
-		if (timesync-- == 0 || syncImm)
-		{
-			syncImm = false;
-			TelescopeBackend::syncTime();
-			timezone = TelescopeBackend::getConfigInt("timezone");
-			location = LocationCoordinates(TelescopeBackend::getConfigDouble("latitude"), TelescopeBackend::getConfigDouble("longitude"));
-			timesync = 100;
 		}
 
 	}
@@ -54,25 +34,25 @@ void Model::tick()
 //	return time(NULL);
 //}
 
-EquatorialCoordinates Model::getEqCoords()
-{
-	return eq_coord;
-}
-
-MountCoordinates Model::getMountCoords()
-{
-	return mount_coord;
-}
-
-int Model::getTimeZone()
-{
-	return timezone;
-}
-
-LocationCoordinates Model::getLocation()
-{
-	return location;
-}
+//EquatorialCoordinates Model::getEqCoords()
+//{
+//	return eq_coord;
+//}
+//
+//MountCoordinates Model::getMountCoords()
+//{
+//	return mount_coord;
+//}
+//
+//int Model::getTimeZone()
+//{
+//	return timezone;
+//}
+//
+//LocationCoordinates Model::getLocation()
+//{
+//	return location;
+//}
 
 //TelescopeBackend::mountstatus_t Model::getStatus()
 //{

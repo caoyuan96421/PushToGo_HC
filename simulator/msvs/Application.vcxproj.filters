@@ -275,16 +275,16 @@
       <UniqueIdentifier>09695B36-0715-4657-A622-114752A75754</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\gui\include">
-      <UniqueIdentifier>BB8C9E96-84ED-41DC-B45A-9C7F7A18B967</UniqueIdentifier>
+      <UniqueIdentifier>AF36B55B-B269-4723-838D-AD188B02138D</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\gui\include">
-      <UniqueIdentifier>BEDDE361-E834-43DF-BFB0-F1DB8C6C1A9E</UniqueIdentifier>
+      <UniqueIdentifier>42E7C2E4-7D79-44F1-A92B-AB3F87E59826</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\gui\include\widgets">
-      <UniqueIdentifier>8770554B-2669-4892-8DB4-CFFE8BC19DEA</UniqueIdentifier>
+      <UniqueIdentifier>84113F52-4264-4A8F-B5F1-8E987FA03210</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\gui\include\widgets">
-      <UniqueIdentifier>E48E4231-B7D6-4F99-87F4-932804858507</UniqueIdentifier>
+      <UniqueIdentifier>966F1B1A-012B-4C46-ABB2-FE271CDA10F5</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

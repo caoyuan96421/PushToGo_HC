@@ -71,7 +71,7 @@ static void write(const char *buf, size_t len) {
 }
 
 void debug_if(int condition, const char *format, ...) {
-	char buf[256];
+	char buf[1024];
 #if !defined(NDEBUG)
 	if (condition) {
 		va_list args;
@@ -87,7 +87,7 @@ void error(const char *format, ...) {
 #ifndef SIMULATOR
 	taskDISABLE_INTERRUPTS();
 #endif
-	char buf[256];
+	char buf[1024];
 	va_list args;
 	va_start(args, format);
 	int len = vsnprintf(buf, sizeof(buf), format, args);

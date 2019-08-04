@@ -32,7 +32,7 @@ public:
 
 
     // StarMapScreen
-    void gotoStarMapScreenScreenNoTransition();
+    void gotoStarMapScreenScreenCoverTransitionNorth();
 
 
     // UtilityScreen
@@ -70,7 +70,7 @@ protected:
 
 
     // StarMapScreen
-    void gotoStarMapScreenScreenNoTransitionImpl();
+    void gotoStarMapScreenScreenCoverTransitionNorthImpl();
 
 
     // UtilityScreen

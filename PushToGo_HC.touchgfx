@@ -299,7 +299,8 @@
               "Type": "TriggerClicked"
             },
             "Action": {
-              "ScreenTransitionType": "ScreenTransitionNone",
+              "ScreenTransitionType": "ScreenTransitionCover",
+              "ScreenTransitionDirection": "North",
               "ActionComponent": "StarMapScreen",
               "Type": "ActionGotoScreen"
             }

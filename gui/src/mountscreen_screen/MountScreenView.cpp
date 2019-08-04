@@ -148,7 +148,7 @@ void MountScreenView::updateDisplay(const EquatorialCoordinates& eq, const Mount
 		// Update king rate if selected
 		if (presenter->isUseKingRate())
 		{
-			double kr = kingRate(eq, presenter->getLocation(), TelescopeBackend::getTime());
+			double kr = kingRate(eq, TelescopeBackend::getLocation(), TelescopeBackend::getTime());
 			TelescopeBackend::setSpeed("track", kr / sidereal_speed);
 		}
 
@@ -232,7 +232,7 @@ void MountScreenView::trackSpeedSelected(const AbstractButton& src)
 	else if (&src == &toggleKing)
 	{
 		useKing = true;
-		double kr = kingRate(presenter->getEqCoords(), presenter->getLocation(), TelescopeBackend::getTime());
+		double kr = kingRate(TelescopeBackend::getEqCoords(), TelescopeBackend::getLocation(), TelescopeBackend::getTime());
 		TelescopeBackend::setSpeed("track", kr / sidereal_speed);
 	}
 	presenter->useKingRate(useKing);

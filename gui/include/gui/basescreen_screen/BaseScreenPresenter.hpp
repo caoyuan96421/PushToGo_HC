@@ -30,20 +30,20 @@ public:
 	}
 	;
 
-	EquatorialCoordinates getEqCoords()
-	{
-		return model->getEqCoords();
-	}
-
-	MountCoordinates getMountCoords()
-	{
-		return model->getMountCoords();
-	}
-
-	LocationCoordinates getLocation()
-	{
-		return model->getLocation();
-	}
+//	EquatorialCoordinates getEqCoords()
+//	{
+//		return model->getEqCoords();
+//	}
+//
+//	MountCoordinates getMountCoords()
+//	{
+//		return model->getMountCoords();
+//	}
+//
+//	LocationCoordinates getLocation()
+//	{
+//		return model->getLocation();
+//	}
 
 //	TelescopeBackend::mountstatus_t getStatus()
 //	{

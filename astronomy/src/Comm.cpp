@@ -28,6 +28,7 @@
 #define BUF_SIZE 512
 
 UART_HandleTypeDef huart;
+int error_count = 0;
 
 unsigned char rx_start[BUF_SIZE];
 unsigned char tx_start[BUF_SIZE];
@@ -66,8 +67,12 @@ xSemaphoreHandle rx_sem;
 volatile bool tx_complete;
 volatile bool rx_error;
 
+int c1 = 0;
+int c2 = 0;
+
 extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
 	tx_complete = true;
+	c1++;
 }
 
 extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
@@ -86,6 +91,7 @@ extern "C" void USART6_IRQHandler() {
 
 	// Error codes
 	if (rx_error) {
+		error_count++;
 
 		if (was_tx_ongoing && !tx_complete) {
 			// TX ongoing but not finished yet, we should continue even though there is an error in RX
@@ -157,6 +163,7 @@ extern "C" void USART6_IRQHandler() {
 
 extern "C" void DMA2_Stream7_IRQHandler() {
 	HAL_DMA_IRQHandler(&tx_dma);
+	c2++;
 }
 
 #endif

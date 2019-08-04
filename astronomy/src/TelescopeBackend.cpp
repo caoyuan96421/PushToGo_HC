@@ -11,6 +11,11 @@
 #include <cstring>
 #include <cstdlib>
 
+static EquatorialCoordinates eq_coord;
+static MountCoordinates mc_coord;
+static TelescopeBackend::mountstatus_t status;
+static LocationCoordinates loc_coord;
+
 #ifndef SIMULATOR
 #include "Comm.h"
 #include "Debug.h"
@@ -21,9 +26,12 @@
 
 #define TB_DEBUG 1
 
+static int timezone;
+
 // Timeout values for different commands
 static const int TIMEOUT_IMMEDIATE = 500; // Commands that should immediately return
 static xSemaphoreHandle mutex = xSemaphoreCreateMutex();
+static xQueueHandle cmd_queue = xQueueCreate(64, sizeof(char*));
 static RTC_HandleTypeDef rtc;
 //static Thread backend_thread(osPriorityBelowNormal, OS_STACK_SIZE, NULL, "backend_thread");
 //static Timer timer;
@@ -174,6 +182,7 @@ static void rtc_init() {
 	}
 }
 
+// Reader thread
 static void read_thread(void*) {
 	char buf;
 	char linebuf[1024];
@@ -225,6 +234,17 @@ static void read_thread(void*) {
 	}
 }
 
+// Writer thread
+static void write_thread(void *params) {
+	while(true){
+		char *cmd;
+		xQueueReceive(cmd_queue, &cmd, portMAX_DELAY);
+		Comm::write(cmd, strlen(cmd));
+		delete cmd;
+	}
+}
+
+// Write command, ignore output
 static void queryNoResponse(const char *command, const char *arg) {
 	char buf[256];
 	int len;
@@ -235,8 +255,16 @@ static void queryNoResponse(const char *command, const char *arg) {
 	else
 		len = snprintf(buf, sizeof(buf), "%s %s\r\n", command, arg);
 
-// Write command, ignore output
-	Comm::write(buf, len);
+	buf[len-1] = '\0'; // Ensure termination
+
+	debug_if(TB_DEBUG, "commandNoReturn: %s\r\n", buf);
+
+	char *cmd = new char[len+1];
+	if (!cmd){
+		return;
+	}
+	strcpy(cmd, buf);
+	xQueueSend(cmd_queue, &cmd, portMAX_DELAY);
 }
 
 static ListNode* queryStart(const char *command, const char *arg, int timeout) {
@@ -247,15 +275,21 @@ static ListNode* queryStart(const char *command, const char *arg, int timeout) {
 		len = snprintf(buf, sizeof(buf), "%s\r\n", command);
 	else {
 		len = snprintf(buf, sizeof(buf), "%s %s\r\n", command, arg);
-
-		debug_if(TB_DEBUG, "commandSent: %s+%s=%s\r\n", command, arg, buf);
 	}
+	buf[len-1] = '\0'; // Ensure termination
 
-// Prepare command tracking structure
+	debug_if(TB_DEBUG, "commandSend: %s\r\n", buf);
+
 	ListNode *cmd_node = commandStarted(command, timeout);
 
 // Write command
-	Comm::write(buf, len);
+	char *cmd = new char[len+1];
+	if (!cmd){
+		nodeDelete(cmd_node);
+		return NULL;
+	}
+	strcpy(cmd, buf);
+	xQueueSend(cmd_queue, &cmd, portMAX_DELAY);
 
 	return cmd_node;
 }
@@ -286,7 +320,7 @@ static int queryWaitForReturn(ListNode *p, int timeout) {
 	}
 	int ret = p->retval;
 	if (ret && TB_DEBUG) {
-		error("ret=%d", ret); // TODO
+		debug_if(TB_DEBUG, "ret=%d", ret);
 	}
 	return ret;
 }
@@ -295,9 +329,124 @@ static void queryFinish(ListNode *p) {
 	nodeDelete(p);
 }
 
+static int _getEqCoords() {
+	char buf[64];
+	double ra, dec;
+	ListNode *node = queryStart("read", NULL, TIMEOUT_IMMEDIATE);
+	if (!node) {
+		return -1;
+	}
+	if (queryMessage(node, buf, sizeof(buf), TIMEOUT_IMMEDIATE) != 0) {
+		goto failed;
+	}
+	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
+		goto failed;
+	}
+	queryFinish(node);
+
+	if (sscanf(buf, "%lf%lf", &ra, &dec) != 2) {
+		goto failed;
+	}
+	debug_if(TB_DEBUG, "RA=%lf, DEC=%lf\r\n", ra, dec);
+	eq_coord = EquatorialCoordinates(dec, ra);
+	return 0;
+
+	failed: debug_if(TB_DEBUG, "Failed to read coordinates.\r\n");
+	queryFinish(node);
+	return -1;
+}
+
+static int _getMountCoords() {
+	char buf[64];
+	double ra, dec;
+	ListNode *node = queryStart("read", "mount", TIMEOUT_IMMEDIATE);
+	if (!node) {
+		return -1;
+	}
+	if (queryMessage(node, buf, sizeof(buf), TIMEOUT_IMMEDIATE) != 0) {
+		goto failed;
+	}
+	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
+		goto failed;
+	}
+	queryFinish(node);
+
+	if (sscanf(buf, "%lf%lf", &ra, &dec) != 2) {
+		goto failed;
+	}
+	debug_if(TB_DEBUG, "RA=%f, DEC=%f\r\n", ra, dec);
+	mc_coord = MountCoordinates(dec, ra);
+	return 0;
+
+	failed: debug_if(TB_DEBUG, "Failed to read coordinates.\r\n");
+	queryFinish(node);
+	return -1;
+}
+
+static TelescopeBackend::mountstatus_t _getStatus() {
+
+	char buf[32];
+	ListNode *node = queryStart("status", NULL, TIMEOUT_IMMEDIATE);
+	if (!node) {
+		return TelescopeBackend::UNDEFINED;
+	}
+	if (queryMessage(node, buf, sizeof(buf), TIMEOUT_IMMEDIATE) != 0) {
+		goto failed;
+	}
+	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
+		goto failed;
+	}
+	queryFinish(node);
+
+	debug_if(TB_DEBUG, "state: %s\r\n", buf);
+
+	if (strcmp(buf, "stopped") == 0)
+		return TelescopeBackend::MOUNT_STOPPED;
+	else if (strcmp(buf, "slewing") == 0)
+		return TelescopeBackend::MOUNT_SLEWING;
+	else if (strcmp(buf, "tracking") == 0)
+		return TelescopeBackend::MOUNT_TRACKING;
+	else if (strcmp(buf, "nudging") == 0)
+		return TelescopeBackend::MOUNT_NUDGING;
+	else if (strcmp(buf, "nudging_tracking") == 0)
+		return TelescopeBackend::MOUNT_NUDGING_TRACKING;
+	else if (strcmp(buf, "tracking_guiding") == 0)
+		return (TelescopeBackend::mountstatus_t) (TelescopeBackend::MOUNT_TRACKING
+				| TelescopeBackend::MOUNT_GUIDING);
+	else
+		return TelescopeBackend::UNDEFINED;
+
+	failed: debug_if(TB_DEBUG, "Failed to read status.\r\n");
+	queryFinish(node);
+	return TelescopeBackend::UNDEFINED;
+}
+
+// Periodically update mount position through polling
+static void poll_thread(void *params) {
+	int timesync = 0;
+	while (true) {
+		vTaskDelay(150);
+		_getEqCoords();
+		_getMountCoords();
+		status = _getStatus();
+		if (timesync-- == 0) {
+			TelescopeBackend::syncTime();
+			timezone = TelescopeBackend::getConfigInt("timezone");
+			loc_coord = LocationCoordinates(
+					TelescopeBackend::getConfigDouble("latitude"),
+					TelescopeBackend::getConfigDouble("longitude"));
+			timesync = 10;
+		}
+	}
+}
+
 void TelescopeBackend::initialize() {
 	Comm::init();
-	xTaskCreate(read_thread, (TASKCREATE_NAME_TYPE)"backend_thread", 1024, NULL,
+	xTaskCreate(read_thread, (TASKCREATE_NAME_TYPE)"rx_thread", 1024,
+			NULL, tskIDLE_PRIORITY + 2, NULL);
+	xTaskCreate(write_thread, (TASKCREATE_NAME_TYPE)"tx_thread", 1024,
+			NULL, tskIDLE_PRIORITY + 2, NULL);
+	xTaskCreate(poll_thread, (TASKCREATE_NAME_TYPE)"poll_thread", 1024, NULL,
 			tskIDLE_PRIORITY + 2, NULL);
 	rtc_init();
 	if (!rtc_enabled()) {
@@ -305,87 +454,92 @@ void TelescopeBackend::initialize() {
 	}
 }
 
-time_t TelescopeBackend::getTime(void)
-{
-    struct tm timeinfo;
+time_t TelescopeBackend::getTime(void) {
+	struct tm timeinfo;
 
-    /* Since the shadow registers are bypassed we have to read the time twice and compare them until both times are the same */
-    uint32_t Read_time = RTC->TR & RTC_TR_RESERVED_MASK;
-    uint32_t Read_date = RTC->DR & RTC_DR_RESERVED_MASK;
+	/* Since the shadow registers are bypassed we have to read the time twice and compare them until both times are the same */
+	uint32_t Read_time = RTC->TR & RTC_TR_RESERVED_MASK;
+	uint32_t Read_date = RTC->DR & RTC_DR_RESERVED_MASK;
 
-    while ((Read_time != (RTC->TR & RTC_TR_RESERVED_MASK)) || (Read_date != (RTC->DR & RTC_DR_RESERVED_MASK))) {
-        Read_time = RTC->TR & RTC_TR_RESERVED_MASK;
-        Read_date = RTC->DR & RTC_DR_RESERVED_MASK;
-    }
+	while ((Read_time != (RTC->TR & RTC_TR_RESERVED_MASK))
+			|| (Read_date != (RTC->DR & RTC_DR_RESERVED_MASK))) {
+		Read_time = RTC->TR & RTC_TR_RESERVED_MASK;
+		Read_date = RTC->DR & RTC_DR_RESERVED_MASK;
+	}
 
-    /* Setup a tm structure based on the RTC
-    struct tm :
-        tm_sec      seconds after the minute 0-61
-        tm_min      minutes after the hour 0-59
-        tm_hour     hours since midnight 0-23
-        tm_mday     day of the month 1-31
-        tm_mon      months since January 0-11
-        tm_year     years since 1900
-        tm_yday     information is ignored by _rtc_maketime
-        tm_wday     information is ignored by _rtc_maketime
-        tm_isdst    information is ignored by _rtc_maketime
-    */
-    timeinfo.tm_mday = RTC_Bcd2ToByte((uint8_t)(Read_date & (RTC_DR_DT | RTC_DR_DU)));
-    timeinfo.tm_mon  = RTC_Bcd2ToByte((uint8_t)((Read_date & (RTC_DR_MT | RTC_DR_MU))  >> 8)) - 1;
-    timeinfo.tm_year = RTC_Bcd2ToByte((uint8_t)((Read_date & (RTC_DR_YT | RTC_DR_YU))  >> 16)) + 68;
-    timeinfo.tm_hour = RTC_Bcd2ToByte((uint8_t)((Read_time & (RTC_TR_HT  | RTC_TR_HU))  >> 16));
-    timeinfo.tm_min  = RTC_Bcd2ToByte((uint8_t)((Read_time & (RTC_TR_MNT | RTC_TR_MNU)) >> 8));
-    timeinfo.tm_sec  = RTC_Bcd2ToByte((uint8_t)((Read_time & (RTC_TR_ST  | RTC_TR_SU))  >> 0));
+	/* Setup a tm structure based on the RTC
+	 struct tm :
+	 tm_sec      seconds after the minute 0-61
+	 tm_min      minutes after the hour 0-59
+	 tm_hour     hours since midnight 0-23
+	 tm_mday     day of the month 1-31
+	 tm_mon      months since January 0-11
+	 tm_year     years since 1900
+	 tm_yday     information is ignored by _rtc_maketime
+	 tm_wday     information is ignored by _rtc_maketime
+	 tm_isdst    information is ignored by _rtc_maketime
+	 */
+	timeinfo.tm_mday = RTC_Bcd2ToByte(
+			(uint8_t) (Read_date & (RTC_DR_DT | RTC_DR_DU)));
+	timeinfo.tm_mon = RTC_Bcd2ToByte(
+			(uint8_t) ((Read_date & (RTC_DR_MT | RTC_DR_MU)) >> 8)) - 1;
+	timeinfo.tm_year = RTC_Bcd2ToByte(
+			(uint8_t) ((Read_date & (RTC_DR_YT | RTC_DR_YU)) >> 16)) + 68;
+	timeinfo.tm_hour = RTC_Bcd2ToByte(
+			(uint8_t) ((Read_time & (RTC_TR_HT | RTC_TR_HU)) >> 16));
+	timeinfo.tm_min = RTC_Bcd2ToByte(
+			(uint8_t) ((Read_time & (RTC_TR_MNT | RTC_TR_MNU)) >> 8));
+	timeinfo.tm_sec = RTC_Bcd2ToByte(
+			(uint8_t) ((Read_time & (RTC_TR_ST | RTC_TR_SU)) >> 0));
 
-    // Convert to timestamp
-    time_t t;
-    if (_rtc_maketime(&timeinfo, &t, RTC_4_YEAR_LEAP_YEAR_SUPPORT) == false) {
-        return 0;
-    }
+	// Convert to timestamp
+	time_t t;
+	if (_rtc_maketime(&timeinfo, &t, RTC_4_YEAR_LEAP_YEAR_SUPPORT) == false) {
+		return 0;
+	}
 
-    return t;
+	return t;
 }
 
-void TelescopeBackend::setTime(time_t t)
-{
-    RTC_DateTypeDef dateStruct = {0};
-    RTC_TimeTypeDef timeStruct = {0};
+void TelescopeBackend::setTime(time_t t) {
+	RTC_DateTypeDef dateStruct = { 0 };
+	RTC_TimeTypeDef timeStruct = { 0 };
 
-    taskENTER_CRITICAL();
-    rtc.Instance = RTC;
+	taskENTER_CRITICAL();
+	rtc.Instance = RTC;
 
-    // Convert the time into a tm
-    struct tm timeinfo;
-    if (_rtc_localtime(t, &timeinfo, RTC_4_YEAR_LEAP_YEAR_SUPPORT) == false) {
-        return;
-    }
+	// Convert the time into a tm
+	struct tm timeinfo;
+	if (_rtc_localtime(t, &timeinfo, RTC_4_YEAR_LEAP_YEAR_SUPPORT) == false) {
+		return;
+	}
 
-    // Fill RTC structures
-    if (timeinfo.tm_wday == 0) { /* Sunday specific case */
-        dateStruct.WeekDay    = RTC_WEEKDAY_SUNDAY;
-    } else {
-        dateStruct.WeekDay    = timeinfo.tm_wday;
-    }
-    dateStruct.Month          = timeinfo.tm_mon + 1;
-    dateStruct.Date           = timeinfo.tm_mday;
-    dateStruct.Year           = timeinfo.tm_year - 68;
-    timeStruct.Hours          = timeinfo.tm_hour;
-    timeStruct.Minutes        = timeinfo.tm_min;
-    timeStruct.Seconds        = timeinfo.tm_sec;
+	// Fill RTC structures
+	if (timeinfo.tm_wday == 0) { /* Sunday specific case */
+		dateStruct.WeekDay = RTC_WEEKDAY_SUNDAY;
+	} else {
+		dateStruct.WeekDay = timeinfo.tm_wday;
+	}
+	dateStruct.Month = timeinfo.tm_mon + 1;
+	dateStruct.Date = timeinfo.tm_mday;
+	dateStruct.Year = timeinfo.tm_year - 68;
+	timeStruct.Hours = timeinfo.tm_hour;
+	timeStruct.Minutes = timeinfo.tm_min;
+	timeStruct.Seconds = timeinfo.tm_sec;
 
-    timeStruct.TimeFormat     = RTC_HOURFORMAT_24;
-    timeStruct.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
-    timeStruct.StoreOperation = RTC_STOREOPERATION_RESET;
+	timeStruct.TimeFormat = RTC_HOURFORMAT_24;
+	timeStruct.DayLightSaving = RTC_DAYLIGHTSAVING_NONE;
+	timeStruct.StoreOperation = RTC_STOREOPERATION_RESET;
 
-    // Change the RTC current date/time
-    if (HAL_RTC_SetDate(&rtc, &dateStruct, RTC_FORMAT_BIN) != HAL_OK) {
-        error("HAL_RTC_SetDate error\n");
-    }
-    if (HAL_RTC_SetTime(&rtc, &timeStruct, RTC_FORMAT_BIN) != HAL_OK) {
-        error("HAL_RTC_SetTime error\n");
-    }
+	// Change the RTC current date/time
+	if (HAL_RTC_SetDate(&rtc, &dateStruct, RTC_FORMAT_BIN) != HAL_OK) {
+		error("HAL_RTC_SetDate error\n");
+	}
+	if (HAL_RTC_SetTime(&rtc, &timeStruct, RTC_FORMAT_BIN) != HAL_OK) {
+		error("HAL_RTC_SetTime error\n");
+	}
 
-    taskEXIT_CRITICAL();
+	taskEXIT_CRITICAL();
 }
 
 int TelescopeBackend::syncTime() {
@@ -412,58 +566,20 @@ int TelescopeBackend::syncTime() {
 	return -1;
 }
 
-int TelescopeBackend::getEqCoords(EquatorialCoordinates &out) {
-	char buf[64];
-	double ra, dec;
-	ListNode *node = queryStart("read", NULL, TIMEOUT_IMMEDIATE);
-	if (!node) {
-		return -1;
-	}
-	if (queryMessage(node, buf, sizeof(buf), TIMEOUT_IMMEDIATE) != 0) {
-		goto failed;
-	}
-	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
-		goto failed;
-	}
-	queryFinish(node);
-
-	if (sscanf(buf, "%lf%lf", &ra, &dec) != 2) {
-		goto failed;
-	}
-	debug_if(TB_DEBUG, "RA=%lf, DEC=%lf\r\n", ra, dec);
-	out = EquatorialCoordinates(dec, ra);
-	return 0;
-
-	failed: debug_if(TB_DEBUG, "Failed to read coordinates.\r\n");
-	queryFinish(node);
-	return -1;
+EquatorialCoordinates TelescopeBackend::getEqCoords() {
+	return eq_coord;
 }
 
-int TelescopeBackend::getMountCoords(MountCoordinates &out) {
-	char buf[64];
-	double ra, dec;
-	ListNode *node = queryStart("read", "mount", TIMEOUT_IMMEDIATE);
-	if (!node) {
-		return -1;
-	}
-	if (queryMessage(node, buf, sizeof(buf), TIMEOUT_IMMEDIATE) != 0) {
-		goto failed;
-	}
-	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
-		goto failed;
-	}
-	queryFinish(node);
+MountCoordinates TelescopeBackend::getMountCoords() {
+	return mc_coord;
+}
 
-	if (sscanf(buf, "%lf%lf", &ra, &dec) != 2) {
-		goto failed;
-	}
-	debug_if(TB_DEBUG, "RA=%f, DEC=%f\r\n", ra, dec);
-	out = MountCoordinates(dec, ra);
-	return 0;
+int TelescopeBackend::getTimeZone() {
+	return timezone;
+}
 
-	failed: debug_if(TB_DEBUG, "Failed to read coordinates.\r\n");
-	queryFinish(node);
-	return -1;
+LocationCoordinates TelescopeBackend::getLocation() {
+	return loc_coord;
 }
 
 int TelescopeBackend::startNudge(Direction dir) {
@@ -557,39 +673,7 @@ int TelescopeBackend::track(bool on) {
 }
 
 TelescopeBackend::mountstatus_t TelescopeBackend::getStatus() {
-	char buf[32];
-	ListNode *node = queryStart("status", NULL, TIMEOUT_IMMEDIATE);
-	if (!node) {
-		return UNDEFINED;
-	}
-	if (queryMessage(node, buf, sizeof(buf), TIMEOUT_IMMEDIATE) != 0) {
-		goto failed;
-	}
-	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
-		goto failed;
-	}
-	queryFinish(node);
-
-	debug_if(TB_DEBUG, "state: %s\r\n", buf);
-
-	if (strcmp(buf, "stopped") == 0)
-		return MOUNT_STOPPED;
-	else if (strcmp(buf, "slewing") == 0)
-		return MOUNT_SLEWING;
-	else if (strcmp(buf, "tracking") == 0)
-		return MOUNT_TRACKING;
-	else if (strcmp(buf, "nudging") == 0)
-		return MOUNT_NUDGING;
-	else if (strcmp(buf, "nudging_tracking") == 0)
-		return MOUNT_NUDGING_TRACKING;
-	else if (strcmp(buf, "tracking_guiding") == 0)
-		return (mountstatus_t) (MOUNT_TRACKING | MOUNT_GUIDING);
-	else
-		return UNDEFINED;
-
-	failed: debug_if(TB_DEBUG, "Failed to read status.\r\n");
-	queryFinish(node);
-	return UNDEFINED;
+	return status;
 }
 
 static void setDataValue(DataType type, char *str, DataValue &value) {
@@ -1063,9 +1147,6 @@ void TelescopeBackend::handleNudge(float x, float y) {
 
 #else
 
-static EquatorialCoordinates eq_coord(0, 0);
-static LocationCoordinates loc_coord(30, 20);
-
 void TelescopeBackend::initialize() {
 }
 
@@ -1076,17 +1157,13 @@ time_t TelescopeBackend::getTime() {
 	return time(NULL);
 }
 int TelescopeBackend::syncTime() {
-
 }
-int TelescopeBackend::getEqCoords(EquatorialCoordinates &eq) {
-	eq = eq_coord;
-	return 0;
+EquatorialCoordinates TelescopeBackend::getEqCoords() {
+	return eq_coord;
 }
-int TelescopeBackend::getMountCoords(MountCoordinates &mc) {
-	mc =
-			eq_coord.toLocalEquatorialCoordinates(getTime(), loc_coord).toMountCoordinates(
+MountCoordinates TelescopeBackend::getMountCoords() {
+	return	eq_coord.toLocalEquatorialCoordinates(getTime(), loc_coord).toMountCoordinates(
 					PIER_SIDE_AUTO);
-	return 0;
 }
 
 int TelescopeBackend::getConfigAll(ConfigItem*, int) {
@@ -1192,5 +1269,14 @@ void TelescopeBackend::setSpeed(const char *type, double speedSidereal) {
 void TelescopeBackend::handleNudge(float x, float y) {
 
 }
+
+int TelescopeBackend::getTimeZone(){
+	return timezone;
+}
+
+LocationCoordinates TelescopeBackend::getLocation(){
+	return loc_coord;
+}
+
 
 #endif

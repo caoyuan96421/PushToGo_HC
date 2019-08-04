@@ -9,7 +9,7 @@ MountScreenPresenter::MountScreenPresenter(MountScreenView& v) :
 void MountScreenPresenter::activate()
 {
 	BaseScreenPresenter::activate();
-	view.updateDisplay(model->getEqCoords(), model->getMountCoords());
+	view.updateDisplay(TelescopeBackend::getEqCoords(), TelescopeBackend::getMountCoords());
 }
 
 void MountScreenPresenter::deactivate()
