@@ -8,11 +8,11 @@
 #include <common/Partition.hpp>
 #include <mvp/MVPHeap.hpp>
 #include <touchgfx/transitions/NoTransition.hpp>
-#include <touchgfx/transitions/SlideTransition.hpp>
-#include <touchgfx/transitions/SlideTransition.hpp>
+#include <touchgfx/transitions/CoverTransition.hpp>
+#include <touchgfx/transitions/CoverTransition.hpp>
 #include <touchgfx/transitions/CoverTransition.hpp>
 #include <touchgfx/transitions/SlideTransition.hpp>
-#include <touchgfx/transitions/SlideTransition.hpp>
+#include <touchgfx/transitions/CoverTransition.hpp>
 #include <touchgfx/transitions/SlideTransition.hpp>
 #include <touchgfx/transitions/SlideTransition.hpp>
 #include <touchgfx/transitions/SlideTransition.hpp>
@@ -105,10 +105,13 @@ public:
      * @note All transition types used in the application MUST be added to this list!
      */
     typedef meta::TypeList< NoTransition,
-            meta::TypeList< SlideTransition<EAST>,
+            meta::TypeList< CoverTransition<WEST>,
+            meta::TypeList< CoverTransition<SOUTH>,
             meta::TypeList< CoverTransition<NORTH>,
+            meta::TypeList< SlideTransition<EAST>,
+            meta::TypeList< CoverTransition<EAST>,
             meta::TypeList< SlideTransition<WEST>,
-            meta::Nil > > >
+            meta::Nil > > > > > >
             > GeneratedTransitionTypes;
 
     /**

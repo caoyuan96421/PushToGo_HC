@@ -40,9 +40,12 @@ BaseScreenViewBase::BaseScreenViewBase() :
     date.setWildcard(dateBuffer);
     date.setTypedText(TypedText(T_SINGLEUSEID9));
 
-    home_button.setXY(225, 758);
+    home_button.setXY(211, 750);
     home_button.setBitmaps(Bitmap(BITMAP_HOME_BUTTON_ID), Bitmap(BITMAP_HOME_BUTTON2_ID));
     home_button.setAction(buttonCallback);
+
+    messagePopup1.setXY(0, 0);
+    messagePopup1.setVisible(false);
 
     add(box2);
     add(ra_coord);
@@ -50,11 +53,12 @@ BaseScreenViewBase::BaseScreenViewBase() :
     add(time);
     add(date);
     add(home_button);
+    add(messagePopup1);
 }
 
 void BaseScreenViewBase::setupScreen()
 {
-
+    messagePopup1.initialize();
 }
 
 void BaseScreenViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
@@ -63,7 +67,7 @@ void BaseScreenViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& s
     {
         //Interaction1
         //When home_button clicked change screen to HomeScreen
-        //Go to HomeScreen with screen transition towards West
-        application().gotoHomeScreenScreenSlideTransitionWest();
+        //Go to HomeScreen with screen transition towards East
+        application().gotoHomeScreenScreenCoverTransitionEast();
     }
 }

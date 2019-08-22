@@ -58,6 +58,8 @@
     <ClCompile Include="..\..\gui\src\widgets\NumericalWheelSelector.cpp"/>
     <ClCompile Include="..\..\gui\src\widgets\StarMapWidget.cpp"/>
     <ClCompile Include="..\..\gui\src\widgets\WheelSelector.cpp"/>
+    <ClCompile Include="..\..\gui\src\containers\MessagePopup.cpp"/>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\MessagePopupBase.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\assets\texts\texts.xlsx"/>
@@ -244,6 +246,8 @@
     <ClInclude Include="..\..\gui\include\widgets\NumericalWheelSelector.hpp"/>
     <ClInclude Include="..\..\gui\include\widgets\StarMapWidget.h"/>
     <ClInclude Include="..\..\gui\include\widgets\WheelSelector.hpp"/>
+    <ClInclude Include="..\..\gui\include\gui\containers\MessagePopup.hpp"/>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\MessagePopupBase.hpp"/>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\touchgfx.rc"/>

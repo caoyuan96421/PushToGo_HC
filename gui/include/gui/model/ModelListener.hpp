@@ -42,6 +42,9 @@ public:
 	virtual void setCoords(const EquatorialCoordinates &eq, const MountCoordinates &meq)
 	{
 	}
+
+	virtual void showMessage(const char *msg){
+	}
 protected:
 	Model* model;
 };

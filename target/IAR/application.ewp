@@ -1080,6 +1080,9 @@
           <file>
             <name>$PROJ_DIR$\..\..\generated\gui_generated\src\containers\JoyStickBase.cpp</name>
           </file>
+          <file>
+            <name>$PROJ_DIR$\..\..\generated\gui_generated\src\containers\MessagePopupBase.cpp</name>
+          </file>
         </group>
         <group>
           <name>dummyscreen_screen</name>
@@ -1128,12 +1131,6 @@
         <name>images</name>
         <group>
           <name>__designer</name>
-          <file>
-            <name>$PROJ_DIR$\..\..\generated\images\src\__designer\blue_togglebars_toggle_re_small_button_off.cpp</name>
-          </file>
-          <file>
-            <name>$PROJ_DIR$\..\..\generated\images\src\__designer\blue_togglebars_toggle_re_small_button_on.cpp</name>
-          </file>
           <file>
             <name>$PROJ_DIR$\..\..\generated\images\src\__designer\dark_icons_down_arrow_48.cpp</name>
           </file>
@@ -1184,7 +1181,28 @@
           <name>$PROJ_DIR$\..\..\generated\images\src\button3.cpp</name>
         </file>
         <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\color_dial.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\color_dial_red.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\constell-bright.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\constell-dark.cpp</name>
+        </file>
+        <file>
           <name>$PROJ_DIR$\..\..\generated\images\src\Down_arrow_48.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\eq_off.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\eq_on.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\goto.cpp</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\generated\images\src\home_button.cpp</name>
@@ -1224,6 +1242,12 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\generated\images\src\telescope.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\track-bright.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\generated\images\src\track-dark.cpp</name>
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\generated\images\src\Up_arrow_48.cpp</name>
@@ -1284,6 +1308,9 @@
         </file>
         <file>
           <name>$PROJ_DIR$\..\..\gui\src\containers\JoyStick.cpp</name>
+        </file>
+        <file>
+          <name>$PROJ_DIR$\..\..\gui\src\containers\MessagePopup.cpp</name>
         </file>
       </group>
       <group>

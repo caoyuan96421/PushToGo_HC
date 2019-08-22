@@ -18,17 +18,17 @@ public:
     // HomeScreen
     void gotoHomeScreenScreenNoTransition();
 
-    void gotoHomeScreenScreenSlideTransitionWest();
+    void gotoHomeScreenScreenCoverTransitionEast();
 
 
     // MountScreen
-    void gotoMountScreenScreenSlideTransitionEast();
+    void gotoMountScreenScreenCoverTransitionWest();
 
     void gotoMountScreenScreenSlideTransitionWest();
 
 
     // SettingScreen
-    void gotoSettingScreenScreenSlideTransitionEast();
+    void gotoSettingScreenScreenCoverTransitionSouth();
 
 
     // StarMapScreen
@@ -56,17 +56,17 @@ protected:
     // HomeScreen
     void gotoHomeScreenScreenNoTransitionImpl();
 
-    void gotoHomeScreenScreenSlideTransitionWestImpl();
+    void gotoHomeScreenScreenCoverTransitionEastImpl();
 
 
     // MountScreen
-    void gotoMountScreenScreenSlideTransitionEastImpl();
+    void gotoMountScreenScreenCoverTransitionWestImpl();
 
     void gotoMountScreenScreenSlideTransitionWestImpl();
 
 
     // SettingScreen
-    void gotoSettingScreenScreenSlideTransitionEastImpl();
+    void gotoSettingScreenScreenCoverTransitionSouthImpl();
 
 
     // StarMapScreen

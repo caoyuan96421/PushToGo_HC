@@ -33,6 +33,9 @@ public:
 //	{
 //		baseview.setEqCoords(eq);
 //	}
+	void showMessage(const char *msg){
+		baseview.showMessage(msg);
+	}
 
 	BaseScreenView baseview;
 };

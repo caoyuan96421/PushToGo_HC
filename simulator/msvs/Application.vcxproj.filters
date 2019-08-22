@@ -275,16 +275,16 @@
       <UniqueIdentifier>09695B36-0715-4657-A622-114752A75754</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\gui\include">
-      <UniqueIdentifier>AF36B55B-B269-4723-838D-AD188B02138D</UniqueIdentifier>
+      <UniqueIdentifier>D9085DBB-B140-49BF-917D-F4071B0BAD6A</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\gui\include">
-      <UniqueIdentifier>42E7C2E4-7D79-44F1-A92B-AB3F87E59826</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\gui\include\widgets">
-      <UniqueIdentifier>84113F52-4264-4A8F-B5F1-8E987FA03210</UniqueIdentifier>
+      <UniqueIdentifier>05B785E2-B6FE-461E-9293-15A88FC3355F</UniqueIdentifier>
     </Filter>
     <Filter Include="Source Files\gui\include\widgets">
-      <UniqueIdentifier>966F1B1A-012B-4C46-ABB2-FE271CDA10F5</UniqueIdentifier>
+      <UniqueIdentifier>667E9A72-D90D-4521-B1B8-D51DE386C802</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\gui\include\widgets">
+      <UniqueIdentifier>6BC70D6A-ED93-44A9-BBF4-14C844A4095A</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -443,6 +443,12 @@
     </ClCompile>
     <ClCompile Include="..\..\gui\src\widgets\WheelSelector.cpp">
       <Filter>Source Files\gui\widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\gui\src\containers\MessagePopup.cpp">
+      <Filter>Source Files\gui\containers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\generated\gui_generated\src\containers\MessagePopupBase.cpp">
+      <Filter>Source Files\generated\gui_generated\containers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -993,6 +999,12 @@
     </ClInclude>
     <ClInclude Include="..\..\gui\include\widgets\WheelSelector.hpp">
       <Filter>Header Files\gui\include\widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\gui\include\gui\containers\MessagePopup.hpp">
+      <Filter>Header Files\gui\containers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\generated\gui_generated\include\gui_generated\containers\MessagePopupBase.hpp">
+      <Filter>Header Files\generated\gui_generated\containers</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -24,7 +24,7 @@ static LocationCoordinates loc_coord;
 #include "stm32f4xx_hal_pwr.h"
 #include "mbed_mktime.h"
 
-#define TB_DEBUG 1
+#define TB_DEBUG 0
 
 static int timezone;
 
@@ -35,6 +35,11 @@ static xQueueHandle cmd_queue = xQueueCreate(64, sizeof(char*));
 static RTC_HandleTypeDef rtc;
 //static Thread backend_thread(osPriorityBelowNormal, OS_STACK_SIZE, NULL, "backend_thread");
 //static Timer timer;
+
+// Semaphore for signaling update of coords and time
+// Taken -> good to read another
+// Given -> good to update display
+xQueueHandle data_updated = xQueueCreate(1, 1);
 
 struct ListNode {
 	const char *cmd;
@@ -425,7 +430,6 @@ static TelescopeBackend::mountstatus_t _getStatus() {
 static void poll_thread(void *params) {
 	int timesync = 0;
 	while (true) {
-		vTaskDelay(150);
 		_getEqCoords();
 		_getMountCoords();
 		status = _getStatus();
@@ -435,8 +439,10 @@ static void poll_thread(void *params) {
 			loc_coord = LocationCoordinates(
 					TelescopeBackend::getConfigDouble("latitude"),
 					TelescopeBackend::getConfigDouble("longitude"));
-			timesync = 10;
+			timesync = 100;
 		}
+		char dummy = 'a';
+		xQueueSend(data_updated, &dummy, portMAX_DELAY); // Wait until consumer to take away the data before starting next one
 	}
 }
 
@@ -454,17 +460,23 @@ void TelescopeBackend::initialize() {
 	}
 }
 
-time_t TelescopeBackend::getTime(void) {
+static int millisec_offset = 0;
+
+double TelescopeBackend::getTimeHR() {
 	struct tm timeinfo;
 
 	/* Since the shadow registers are bypassed we have to read the time twice and compare them until both times are the same */
 	uint32_t Read_time = RTC->TR & RTC_TR_RESERVED_MASK;
 	uint32_t Read_date = RTC->DR & RTC_DR_RESERVED_MASK;
+	int32_t Read_subsec = RTC->SSR;
 
 	while ((Read_time != (RTC->TR & RTC_TR_RESERVED_MASK))
-			|| (Read_date != (RTC->DR & RTC_DR_RESERVED_MASK))) {
+			|| (Read_date != (RTC->DR & RTC_DR_RESERVED_MASK))
+			|| (Read_subsec != RTC->SSR)
+			) {
 		Read_time = RTC->TR & RTC_TR_RESERVED_MASK;
 		Read_date = RTC->DR & RTC_DR_RESERVED_MASK;
+		Read_subsec = RTC->SSR;
 	}
 
 	/* Setup a tm structure based on the RTC
@@ -498,15 +510,34 @@ time_t TelescopeBackend::getTime(void) {
 		return 0;
 	}
 
-	return t;
+	int32_t PREDIV_S = (RTC->PRER & RTC_PRER_PREDIV_S);
+	int millisec = (PREDIV_S - Read_subsec) * 1000 / (PREDIV_S + 1);
+
+	// Correct t if in middle of shifting
+//	return (Read_subsec > PREDIV_S) ? t : t - 1;
+//	return (millisec >= millisec_offset) ? t : t - 1;
+	return t + (millisec - millisec_offset) / 1000.0;
 }
 
-void TelescopeBackend::setTime(time_t t) {
+time_t TelescopeBackend::getTime(){
+	return (time_t) getTimeHR();
+}
+
+void TelescopeBackend::setTime(time_t t, int ms) {
 	RTC_DateTypeDef dateStruct = { 0 };
 	RTC_TimeTypeDef timeStruct = { 0 };
 
 	taskENTER_CRITICAL();
 	rtc.Instance = RTC;
+
+	int32_t PREDIV_S = (RTC->PRER & RTC_PRER_PREDIV_S);
+	int millisec = (PREDIV_S - RTC->SSR) * 1000 / (PREDIV_S + 1);
+
+	millisec_offset = millisec - ms; // How much we're faster than the actual time
+	if (millisec_offset < 0){
+		millisec_offset += 1000;
+		t++;
+	}
 
 	// Convert the time into a tm
 	struct tm timeinfo;
@@ -544,8 +575,9 @@ void TelescopeBackend::setTime(time_t t) {
 
 int TelescopeBackend::syncTime() {
 	char buf[32];
-	time_t timestamp;
-	ListNode *node = queryStart("time", "stamp", TIMEOUT_IMMEDIATE);
+	double timestamp;
+	int integral;
+	ListNode *node = queryStart("time", "hr", TIMEOUT_IMMEDIATE);
 	if (!node) {
 		return -1;
 	}
@@ -556,9 +588,11 @@ int TelescopeBackend::syncTime() {
 		goto failed;
 	}
 	queryFinish(node);
-	timestamp = strtol(buf, NULL, 10);
+	timestamp = strtod(buf, NULL);
 	debug_if(TB_DEBUG, "Setting time to %d\r\n", timestamp);
-	setTime(timestamp);
+
+	integral = floor(timestamp);
+	setTime(integral, floor((timestamp - integral) * 1000));
 	return 0;
 
 	failed: debug_if(TB_DEBUG, "Failed to sync time.\r\n");
@@ -1150,13 +1184,14 @@ void TelescopeBackend::handleNudge(float x, float y) {
 void TelescopeBackend::initialize() {
 }
 
-void TelescopeBackend::setTime(time_t) {
+void TelescopeBackend::setTime(time_t t, int ms) {
 
 }
 time_t TelescopeBackend::getTime() {
 	return time(NULL);
 }
 int TelescopeBackend::syncTime() {
+	return 0;
 }
 EquatorialCoordinates TelescopeBackend::getEqCoords() {
 	return eq_coord;
@@ -1270,6 +1305,7 @@ void TelescopeBackend::handleNudge(float x, float y) {
 
 }
 
+extern long int timezone;
 int TelescopeBackend::getTimeZone(){
 	return timezone;
 }

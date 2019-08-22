@@ -25,14 +25,14 @@ public:
 		}
 		Screen::handleClickEvent(evt);
 	}
-	void handleGestureEvent(const GestureEvent& evt)
-	{
-		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !scrollableContainer1.getRect().intersect(lastPressed.x, lastPressed.y))
-		{
-			application().gotoUtilityScreenScreenSlideTransitionWest();
-		}
-		Screen::handleGestureEvent(evt);
-	}
+//	void handleGestureEvent(const GestureEvent& evt)
+//	{
+//		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !scrollableContainer1.getRect().intersect(lastPressed.x, lastPressed.y))
+//		{
+//			application().gotoUtilityScreenScreenSlideTransitionWest();
+//		}
+//		Screen::handleGestureEvent(evt);
+//	}
 protected:
 
 	enum
@@ -61,8 +61,8 @@ protected:
 	colortype defaultColor, selectedColor, pressedColor;
 	EqCalibration *calib;
 
-	static void callback(StarInfo* s, void* arg);
-	void _callback(StarInfo* star);
+	static void callback(SkyObjInfo* s, void* arg);
+	void _callback(SkyObjInfo* star);
 
 	struct
 	{

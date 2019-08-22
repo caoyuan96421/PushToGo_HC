@@ -27,16 +27,16 @@ public:
 		}
 		Screen::handleClickEvent(evt);
 	}
-	void handleGestureEvent(const GestureEvent& evt)
-	{
-		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !scrollableContainer1.getRect().intersect(lastPressed.x, lastPressed.y)
-				&& !scrollableContainer2.getRect().intersect(lastPressed.x, lastPressed.y) && !joyStick2.getRect().intersect(lastPressed.x, lastPressed.y)
-				&& !sliderSpeed.getRect().intersect(lastPressed.x, lastPressed.y))
-		{
-			application().gotoUtilityScreenScreenSlideTransitionWest();
-		}
-		Screen::handleGestureEvent(evt);
-	}
+//	void handleGestureEvent(const GestureEvent& evt)
+//	{
+//		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !scrollableContainer1.getRect().intersect(lastPressed.x, lastPressed.y)
+//				&& !scrollableContainer2.getRect().intersect(lastPressed.x, lastPressed.y) && !joyStick2.getRect().intersect(lastPressed.x, lastPressed.y)
+//				&& !sliderSpeed.getRect().intersect(lastPressed.x, lastPressed.y))
+//		{
+//			application().gotoUtilityScreenScreenSlideTransitionWest();
+//		}
+//		Screen::handleGestureEvent(evt);
+//	}
 
 protected:
 
@@ -54,8 +54,8 @@ protected:
 	void buttonStopPressed(const AbstractButton&);
 	void sliderSpeedChanged(const Slider &, int);
 
-	static void callback(StarInfo*, void*);
-	void _callback(StarInfo *);
+	static void callback(SkyObjInfo*, void*);
+	void _callback(SkyObjInfo *);
 
 	void clearMenu(Container &);
 

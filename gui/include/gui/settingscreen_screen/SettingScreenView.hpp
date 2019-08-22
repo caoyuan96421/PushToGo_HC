@@ -14,14 +14,7 @@ class SettingScreenView: public SettingScreenViewBase, public BaseScreenAdaptor 
 public:
 	SettingScreenView();
 	virtual ~SettingScreenView();
-	virtual void setupScreen() {
-#ifndef SIMULATOR
-		xTaskCreate(setupScreen_delayed, (TASKCREATE_NAME_TYPE)"_delayed", 1024,
-				this, tskIDLE_PRIORITY + 3, NULL);
-#else
-		setupScreen_delayed(this); // call directly
-#endif
-	}
+	virtual void setupScreen();
 	virtual void tearDownScreen();
 	void handleClickEvent(const ClickEvent &evt) {
 		if (evt.getType() == ClickEvent::PRESSED) {
@@ -30,15 +23,15 @@ public:
 		}
 		Screen::handleClickEvent(evt);
 	}
-	void handleGestureEvent(const GestureEvent &evt) {
-		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL
-				&& evt.getVelocity() > MIN_SWIPE_VELOCITY
-				&& !scrollableContainer1.getRect().intersect(lastPressed.x,
-						lastPressed.y) && !configPopup1.isVisible()) {
-			application().gotoHomeScreenScreenSlideTransitionWest();
-		}
-		Screen::handleGestureEvent(evt);
-	}
+//	void handleGestureEvent(const GestureEvent &evt) {
+//		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL
+//				&& evt.getVelocity() > MIN_SWIPE_VELOCITY
+//				&& !scrollableContainer1.getRect().intersect(lastPressed.x,
+//						lastPressed.y) && !configPopup1.isVisible()) {
+//			application().gotoHomeScreenScreenSlideTransitionWest();
+//		}
+//		Screen::handleGestureEvent(evt);
+//	}
 protected:
 	static const int MAX_CONFIG = 64;
 	ConfigItem configs[MAX_CONFIG];
@@ -57,12 +50,16 @@ protected:
 	touchgfx::Callback<SettingScreenView, const ButtonItem&> configCallback;
 	touchgfx::Callback<SettingScreenView, ConfigItem*, bool> configOKCallback;
 	touchgfx::Callback<SettingScreenView, const AbstractButton&> configSaveCallback;
+	touchgfx::Callback<SettingScreenView, const Slider&, int> brightnessCallback;
+	touchgfx::Callback<SettingScreenView, const AbstractButton&> colorCallback;
 
 	static void setupScreen_delayed(void *param);
 
 	void configButtonPressed(const ButtonItem&);
 	void configSavePressed(const AbstractButton&);
 	void configSet(ConfigItem*, bool ok);
+	void brightnessChanged(const Slider&, int);
+	void colorToggled(const AbstractButton &);
 
 	struct {
 		int x;

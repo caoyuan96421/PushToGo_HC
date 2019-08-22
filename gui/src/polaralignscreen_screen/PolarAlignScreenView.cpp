@@ -66,13 +66,13 @@ void PolarAlignScreenView::tearDownScreen()
 	TelescopeBackend::updateAlignment();
 }
 
-void PolarAlignScreenView::callback(StarInfo* s, void* arg)
+void PolarAlignScreenView::callback(SkyObjInfo* s, void* arg)
 {
 	if (arg)
 		((PolarAlignScreenView *) arg)->_callback(s);
 }
 
-void PolarAlignScreenView::_callback(StarInfo* star)
+void PolarAlignScreenView::_callback(SkyObjInfo* star)
 {
 	EquatorialCoordinates eq(star->DEC, star->RA);
 
@@ -113,7 +113,7 @@ void PolarAlignScreenView::starSelected(const AbstractButton& src)
 		selectedStar = &button;
 		button.setReleasedColor(selectedColor);
 
-		StarInfo *star = (StarInfo *) button.getUserData();
+		SkyObjInfo *star = (SkyObjInfo *) button.getUserData();
 
 		EquatorialCoordinates eq(star->DEC, star->RA);
 
@@ -150,7 +150,7 @@ void PolarAlignScreenView::listStars()
 	selectedStar = NULL;
 
 	clearMenu(container_stars);
-	StarCatalog::getInstance().query_common(&callback, -180, 180, -90, 90, this, 100);
+	StarCatalog::getInstance().query_stars_common(&callback, -180, 180, -90, 90, this, 100);
 
 	container_stars.setHeight(height * num_stars);
 	scrollableContainer1.childGeometryChanged();
@@ -193,7 +193,7 @@ void PolarAlignScreenView::slewToSelected()
 	// Slew to the target position
 	if (selectedStar && selectedStar->getUserData())
 	{
-		StarInfo *star = (StarInfo *) selectedStar->getUserData();
+		SkyObjInfo *star = (SkyObjInfo *) selectedStar->getUserData();
 		TelescopeBackend::goTo(EquatorialCoordinates(star->DEC, star->RA));
 	}
 

@@ -16,7 +16,7 @@ SettingScreenViewBase::SettingScreenViewBase()
     textArea1_2.setLinespacing(0);
     textArea1_2.setTypedText(TypedText(T_SINGLEUSEID15));
 
-    scrollableContainer1.setPosition(14, 85, 453, 650);
+    scrollableContainer1.setPosition(14, 85, 453, 562);
     scrollableContainer1.enableHorizontalScroll(false);
     scrollableContainer1.setScrollbarsColor(touchgfx::Color::getColorFrom24BitRGB(69, 47, 47));
     scrollableContainer1.setScrollbarsAlpha(163);
@@ -26,6 +26,7 @@ SettingScreenViewBase::SettingScreenViewBase()
     scrollableContainer1.setScrollbarsVisible(false);
 
     configPopup1.setXY(0, 0);
+    configPopup1.setVisible(false);
 
     buttonSave.setXY(300, 12);
     buttonSave.setBitmaps(Bitmap(BITMAP_BUTTON2_ID), Bitmap(BITMAP_BUTTON2_PRESSED_ID));
@@ -33,11 +34,28 @@ SettingScreenViewBase::SettingScreenViewBase()
     buttonSave.setLabelColor(touchgfx::Color::getColorFrom24BitRGB(255, 0, 0));
     buttonSave.setLabelColorPressed(touchgfx::Color::getColorFrom24BitRGB(255, 255, 255));
 
+    sliderBrightness.setXY(167, 663);
+    sliderBrightness.setBitmaps(Bitmap(BITMAP_SLIDERSMALL_ROUND_BACK_ID), Bitmap(BITMAP_SLIDERSMALL_ROUND_FILL_ID), Bitmap(BITMAP_DARK_SLIDER_HORIZONTAL_LARGE_INDICATORS_SLIDER_ROUND_NOB_ID));
+    sliderBrightness.setupHorizontalSlider(7, 11, 0, 0, 161);
+    sliderBrightness.setValueRange(0, 255);
+    sliderBrightness.setValue(0);
+
+    textArea1_2_1.setXY(14, 678);
+    textArea1_2_1.setColor(touchgfx::Color::getColorFrom24BitRGB(176, 46, 46));
+    textArea1_2_1.setLinespacing(0);
+    textArea1_2_1.setTypedText(TypedText(T_SINGLEUSEID135));
+
+    toggleColor.setXY(407, 663);
+    toggleColor.setBitmaps(Bitmap(BITMAP_COLOR_DIAL_ID), Bitmap(BITMAP_COLOR_DIAL_RED_ID));
+
     add(box1);
     add(textArea1_2);
     add(scrollableContainer1);
     add(configPopup1);
     add(buttonSave);
+    add(sliderBrightness);
+    add(textArea1_2_1);
+    add(toggleColor);
 }
 
 void SettingScreenViewBase::setupScreen()

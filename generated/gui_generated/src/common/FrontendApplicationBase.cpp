@@ -55,28 +55,28 @@ void FrontendApplicationBase::gotoHomeScreenScreenNoTransitionImpl()
 }
 
 
-void FrontendApplicationBase::gotoHomeScreenScreenSlideTransitionWest()
+void FrontendApplicationBase::gotoHomeScreenScreenCoverTransitionEast()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoHomeScreenScreenSlideTransitionWestImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoHomeScreenScreenCoverTransitionEastImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
-void FrontendApplicationBase::gotoHomeScreenScreenSlideTransitionWestImpl()
+void FrontendApplicationBase::gotoHomeScreenScreenCoverTransitionEastImpl()
 {
-    makeTransition<HomeScreenView, HomeScreenPresenter, touchgfx::SlideTransition<WEST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+    makeTransition<HomeScreenView, HomeScreenPresenter, touchgfx::CoverTransition<EAST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
 }
 
 // MountScreen
 
-void FrontendApplicationBase::gotoMountScreenScreenSlideTransitionEast()
+void FrontendApplicationBase::gotoMountScreenScreenCoverTransitionWest()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoMountScreenScreenSlideTransitionEastImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoMountScreenScreenCoverTransitionWestImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
-void FrontendApplicationBase::gotoMountScreenScreenSlideTransitionEastImpl()
+void FrontendApplicationBase::gotoMountScreenScreenCoverTransitionWestImpl()
 {
-    makeTransition<MountScreenView, MountScreenPresenter, touchgfx::SlideTransition<EAST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+    makeTransition<MountScreenView, MountScreenPresenter, touchgfx::CoverTransition<WEST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
 }
 
 
@@ -93,15 +93,15 @@ void FrontendApplicationBase::gotoMountScreenScreenSlideTransitionWestImpl()
 
 // SettingScreen
 
-void FrontendApplicationBase::gotoSettingScreenScreenSlideTransitionEast()
+void FrontendApplicationBase::gotoSettingScreenScreenCoverTransitionSouth()
 {
-    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoSettingScreenScreenSlideTransitionEastImpl);
+    transitionCallback = touchgfx::Callback<FrontendApplicationBase>(this, &FrontendApplication::gotoSettingScreenScreenCoverTransitionSouthImpl);
     pendingScreenTransitionCallback = &transitionCallback;
 }
 
-void FrontendApplicationBase::gotoSettingScreenScreenSlideTransitionEastImpl()
+void FrontendApplicationBase::gotoSettingScreenScreenCoverTransitionSouthImpl()
 {
-    makeTransition<SettingScreenView, SettingScreenPresenter, touchgfx::SlideTransition<EAST>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
+    makeTransition<SettingScreenView, SettingScreenPresenter, touchgfx::CoverTransition<SOUTH>, Model >(&currentScreen, &currentPresenter, frontendHeap, &currentTransition, &model);
 }
 
 // StarMapScreen

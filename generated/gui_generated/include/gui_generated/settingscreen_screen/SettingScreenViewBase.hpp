@@ -13,6 +13,8 @@
 
 #include <gui/containers/ConfigPopup.hpp>
 #include <touchgfx/widgets/ButtonWithLabel.hpp>
+#include <touchgfx/containers/Slider.hpp>
+#include <touchgfx/widgets/ToggleButton.hpp>
 class SettingScreenViewBase : public touchgfx::View<SettingScreenPresenter>
 {
 public:
@@ -36,6 +38,9 @@ protected:
 
     ConfigPopup configPopup1;
     touchgfx::ButtonWithLabel buttonSave;
+    touchgfx::Slider sliderBrightness;
+    touchgfx::TextArea textArea1_2_1;
+    touchgfx::ToggleButton toggleColor;
 
 private:
 

@@ -20,13 +20,11 @@ MountScreenView::MountScreenView() :
 				this, &MountScreenView::eqCoordClicked), callbackEqCoordGoto(this, &MountScreenView::eqCoordGoto), callbackMountCoord(this, &MountScreenView::mountCoordClicked), callbackMountCoordGoto(
 				this, &MountScreenView::mountCoordGoto), callbackSliderSpeed(this, &MountScreenView::sliderSpeedChanged)
 {
-	baseview.addTo(&container);
-
 	starmap.setPosition(15, 400, 150, 300);
 	add(starmap);
 
 	starmap.setFOV(2);
-	starmap.setTouchable(false);
+	starmap.setDraggable(false);
 	starmap.setVisible(true); // Enable when transition finishes
 
 	button_stop.setAction(buttonStopCallback);
@@ -74,6 +72,7 @@ MountScreenView::MountScreenView() :
 	sliderSpeed.setNewValueCallback(callbackSliderSpeed);
 
 	speedUpdateHardware = true;
+	baseview.addTo(&container);
 }
 
 void MountScreenView::setupScreen()
@@ -155,28 +154,28 @@ void MountScreenView::updateDisplay(const EquatorialCoordinates& eq, const Mount
 		toggle_track.forceState((TelescopeBackend::getStatus() & TelescopeBackend::MOUNT_TRACKING) != 0);
 		toggle_track.invalidate();
 
-		double slewRate = TelescopeBackend::getSpeed("slew");
-		setSlewSpeed(slewRate);
+		//double slewRate = TelescopeBackend::getSpeed("slew");
+		//setSlewSpeed(slewRate);
 
-		double minRatio = 1e10;
-		int closestIndex = 0;
-		for (int i = 0; i < MountScreenView::NUM_SPEEDS; i++)
-		{
-			double ratio = MountScreenView::SPEEDS[i] / slewRate;
-			if (ratio < 1)
-				ratio = 1.0 / ratio;
-			if (ratio < minRatio)
-			{
-				closestIndex = i;
-				minRatio = ratio;
-			}
-		}
+//		double minRatio = 1e10;
+//		int closestIndex = 0;
+//		for (int i = 0; i < MountScreenView::NUM_SPEEDS; i++)
+//		{
+//			double ratio = MountScreenView::SPEEDS[i] / slewRate;
+//			if (ratio < 1)
+//				ratio = 1.0 / ratio;
+//			if (ratio < minRatio)
+//			{
+//				closestIndex = i;
+//				minRatio = ratio;
+//			}
+//		}
 
 		// Update slider value without sending it to controller
-		speedUpdateHardware = false;
-		sliderSpeed.setValue(closestIndex);
-		speedUpdateHardware = true;
-		sliderSpeed.invalidate();
+//		speedUpdateHardware = false;
+//		sliderSpeed.setValue(closestIndex);
+//		speedUpdateHardware = true;
+//		sliderSpeed.invalidate();
 	}
 }
 

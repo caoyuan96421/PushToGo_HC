@@ -33,7 +33,7 @@ PolarAlignScreenViewBase::PolarAlignScreenViewBase()
     buttonContinue.setXY(37, 655);
     buttonContinue.setBitmaps(Bitmap(BITMAP_BUTTON2_ID), Bitmap(BITMAP_BUTTON2_PRESSED_ID));
     buttonContinue.setLabelText(TypedText(T_SINGLEUSEID124));
-    buttonContinue.setLabelColor(touchgfx::Color::getColorFrom24BitRGB(64, 129, 255));
+    buttonContinue.setLabelColor(touchgfx::Color::getColorFrom24BitRGB(255, 0, 156));
     buttonContinue.setLabelColorPressed(touchgfx::Color::getColorFrom24BitRGB(255, 255, 255));
 
     buttonRestart.setXY(291, 25);
@@ -66,7 +66,7 @@ PolarAlignScreenViewBase::PolarAlignScreenViewBase()
     buttonAligned.setXY(277, 506);
     buttonAligned.setBitmaps(Bitmap(BITMAP_BUTTON2_ID), Bitmap(BITMAP_BUTTON2_PRESSED_ID));
     buttonAligned.setLabelText(TypedText(T_SINGLEUSEID129));
-    buttonAligned.setLabelColor(touchgfx::Color::getColorFrom24BitRGB(64, 236, 255));
+    buttonAligned.setLabelColor(touchgfx::Color::getColorFrom24BitRGB(245, 0, 75));
     buttonAligned.setLabelColorPressed(touchgfx::Color::getColorFrom24BitRGB(255, 255, 255));
 
     textArea5.setPosition(250, 609, 225, 106);

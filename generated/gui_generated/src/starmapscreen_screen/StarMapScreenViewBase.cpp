@@ -11,13 +11,13 @@ StarMapScreenViewBase::StarMapScreenViewBase()
     box1.setPosition(0, 0, 480, 800);
     box1.setColor(touchgfx::Color::getColorFrom24BitRGB(0, 0, 0));
 
-    button_zoomout.setXY(405, 475);
+    button_zoomout.setXY(415, 475);
     button_zoomout.setBitmaps(Bitmap(BITMAP_BUTTON3_ID), Bitmap(BITMAP_BUTTON3_PRESSED_ID));
     button_zoomout.setLabelText(TypedText(T_SINGLEUSEID64));
     button_zoomout.setLabelColor(touchgfx::Color::getColorFrom24BitRGB(100, 91, 130));
     button_zoomout.setLabelColorPressed(touchgfx::Color::getColorFrom24BitRGB(160, 200, 214));
 
-    button_zoomin.setXY(295, 475);
+    button_zoomin.setXY(345, 475);
     button_zoomin.setBitmaps(Bitmap(BITMAP_BUTTON3_ID), Bitmap(BITMAP_BUTTON3_PRESSED_ID));
     button_zoomin.setLabelText(TypedText(T_SINGLEUSEID65));
     button_zoomin.setLabelColor(touchgfx::Color::getColorFrom24BitRGB(100, 91, 130));
@@ -33,28 +33,28 @@ StarMapScreenViewBase::StarMapScreenViewBase()
     textInfo.setWildcard(textInfoBuffer);
     textInfo.setTypedText(TypedText(T_SINGLEUSEID70));
 
-    button_goto.setXY(295, 549);
-    button_goto.setBitmaps(Bitmap(BITMAP_BUTTON2_ID), Bitmap(BITMAP_BUTTON2_PRESSED_ID));
-    button_goto.setLabelText(TypedText(T_SINGLEUSEID71));
-    button_goto.setLabelColor(touchgfx::Color::getColorFrom24BitRGB(255, 255, 255));
-    button_goto.setLabelColorPressed(touchgfx::Color::getColorFrom24BitRGB(255, 255, 255));
+    toggleConstell.setXY(415, 546);
+    toggleConstell.setBitmaps(Bitmap(BITMAP_CONSTELL_DARK_ID), Bitmap(BITMAP_CONSTELL_BRIGHT_ID));
 
-    toggleConstell.setXY(369, 629);
-    toggleConstell.setBitmaps(Bitmap(BITMAP_BLUE_TOGGLEBARS_TOGGLE_RE_SMALL_BUTTON_ON_ID), Bitmap(BITMAP_BLUE_TOGGLEBARS_TOGGLE_RE_SMALL_BUTTON_OFF_ID));
+    toggleFollow.setXY(345, 546);
+    toggleFollow.setBitmaps(Bitmap(BITMAP_TRACK_DARK_ID), Bitmap(BITMAP_TRACK_BRIGHT_ID));
 
-    textArea1.setXY(305, 639);
-    textArea1.setColor(touchgfx::Color::getColorFrom24BitRGB(255, 0, 0));
-    textArea1.setLinespacing(0);
-    textArea1.setTypedText(TypedText(T_SINGLEUSEID119));
+    button_goto.setXY(275, 475);
+    button_goto.setBitmaps(Bitmap(BITMAP_BUTTON3_ID), Bitmap(BITMAP_BUTTON3_PRESSED_ID), Bitmap(BITMAP_GOTO_ID), Bitmap(BITMAP_GOTO_ID));
+    button_goto.setIconXY(7, 7);
+
+    toggleEquatorial.setXY(275, 546);
+    toggleEquatorial.setBitmaps(Bitmap(BITMAP_EQ_OFF_ID), Bitmap(BITMAP_EQ_ON_ID));
 
     add(box1);
     add(button_zoomout);
     add(button_zoomin);
     add(box2);
     add(textInfo);
-    add(button_goto);
     add(toggleConstell);
-    add(textArea1);
+    add(toggleFollow);
+    add(button_goto);
+    add(toggleEquatorial);
 }
 
 void StarMapScreenViewBase::setupScreen()

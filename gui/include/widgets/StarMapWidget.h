@@ -14,10 +14,13 @@
 #include <touchgfx/widgets/TextureMapper.hpp>
 #include <touchgfx/widgets/Box.hpp>
 #include <touchgfx/widgets/AbstractButton.hpp>
+#include <touchgfx/EasingEquations.hpp>
 #include <touchgfx/Color.hpp>
 #include "StarCatalog.h"
 #include "PlanetMoon.h"
 #include "TelescopeBackend.h"
+
+#define STARMAPWIDGET_ANIMATE_MAX_DURATION 20
 
 class StarMapWidget: public touchgfx::CanvasWidget {
 public:
@@ -27,20 +30,37 @@ public:
 	virtual bool drawCanvasWidget(const touchgfx::Rect &invalidatedArea) const;
 	virtual void draw(const touchgfx::Rect &invalidatedArea) const;
 
-	void aimAt(double ra, double dec) {
-		ra_ctr = remainder(ra, 360.0);
+	void aimAt(double ra, double dec, bool smooth = false, touchgfx::GenericCallback<> *cb = NULL) {
+		ra = remainder(ra, 360.0);
 		if (dec > 90.0)
-			dec_ctr = 90.0;
+			dec = 90.0;
 		else if (dec < -90.0)
-			dec_ctr = -90.0;
-		else
+			dec = -90.0;
+		if (!smooth) {
+			ra_ctr = ra;
 			dec_ctr = dec;
+		} else {
+			moveAnimationRunning = true;
+			moveAnimationCounter = 0;
+			moveAnimationStartX = ra_ctr;
+			moveAnimationStartY = dec_ctr;
+			moveAnimationEndX = ra;
+			moveAnimationEndY = dec;
+			moveAnimationCallback = cb;
+			moveAnimationDuration = STARMAPWIDGET_ANIMATE_MAX_DURATION;
+//					(uint16_t) (STARMAPWIDGET_ANIMATE_MAX_DURATION
+//							* dist_angle(ra_ctr, dec_ctr, ra, dec) / 180.0F);
+		}
 		updateView();
 		invalidate();
 	}
 
 	void aimAt(const EquatorialCoordinates &eq) {
 		aimAt(eq.ra, eq.dec);
+	}
+
+	EquatorialCoordinates getAim() {
+		return EquatorialCoordinates(dec_ctr, ra_ctr);
 	}
 
 	void setFOV(double fov) {
@@ -107,8 +127,17 @@ public:
 		invalidate();
 	}
 
-	void setSelectionCallback(touchgfx::GenericCallback<const StarInfo*> &cb) {
+	void setSelectionCallback(
+			touchgfx::GenericCallback<const SkyObjInfo*> &cb) {
 		selectionCallback = &cb;
+	}
+
+	bool isDraggable() const {
+		return draggable;
+	}
+
+	void setDraggable(bool draggable) {
+		this->draggable = draggable;
 	}
 
 protected:
@@ -121,7 +150,7 @@ protected:
 	touchgfx::colortype labelColor;
 	uint8_t labelAlpha;
 	touchgfx::Bitmap moon_bitmap;
-	touchgfx::GenericCallback<const StarInfo*> *selectionCallback;
+	touchgfx::GenericCallback<const SkyObjInfo*> *selectionCallback;
 	mutable class TextureMapperEx: public touchgfx::TextureMapper {
 	public:
 		void setParent(Drawable *p) {
@@ -158,7 +187,7 @@ private:
 	} moonPos, sunPos;
 
 	mutable int tick_rotation;
-	mutable StarInfo *selected;
+	mutable SkyObjInfo *selected;
 
 	bool ispressed;
 	bool isdoubleclick;
@@ -169,6 +198,17 @@ private:
 	int clickX, clickY;
 	unsigned long tim;
 	time_t timestamp;
+	bool draggable;
+	bool moveAnimationRunning; ///< Boolean that is true if the animation is running
+	uint16_t moveAnimationCounter; ///< Counter that is equal to the current step in the animation
+//	uint16_t       moveAnimationDelay;     ///< A delay that is applied before animation start. Expressed in ticks.
+	uint16_t moveAnimationDuration; ///< The complete duration of the animation. Expressed in ticks.
+	double moveAnimationStartX; ///< The X value at the beginning of the animation.
+	double moveAnimationStartY; ///< The Y value at the beginning of the animation.
+	double moveAnimationEndX;      ///< The X value at the end of the animation.
+	double moveAnimationEndY;      ///< The Y value at the end of the animation.
+	touchgfx::GenericCallback<> *moveAnimationCallback; ///< The Y value at the end of the animation.
+	touchgfx::EasingEquation moveAnimationEquation; ///< EasingEquation during the animation.
 
 	static const int STARMAP_WIDGET_MAX_LABEL = 20;
 	static const int STARMAP_WIDGET_MAX_LABEL_LENGTH = 20;
@@ -184,11 +224,11 @@ private:
 		touchgfx::CWRUtil::Q5 y;
 		touchgfx::CWRUtil::Q5 size;
 		touchgfx::colortype color;
-		const StarInfo *info;
+		const SkyObjInfo *info;
 	} visibleStars[STARMAP_WIDGET_MAX_STARS];
 	mutable int num_stars;
 
-	mutable struct SolarSystemInfo: StarInfo {
+	mutable struct SolarSystemInfo: SkyObjInfo {
 		MoonPhase phase;
 		EquatorialCoordinatesWithDist accurate_pos;
 		PlanetMoon::Object obj;
@@ -200,12 +240,12 @@ private:
 		}
 	} planetSunMoon[10];
 
-	static void callback(StarInfo*, void*);
-	void _handleStars(const StarInfo*, bool hires) const;
+	static void callback(SkyObjInfo*, void*);
+	void _handleStarsAndDSO(const SkyObjInfo*, bool hires) const;
 	void _handleSun(const SolarSystemInfo*) const;
 	void _handleMoon(const SolarSystemInfo*) const;
 
-	bool _calcScreenPosition(const StarInfo*, bool isStar,
+	bool _calcScreenPosition(const SkyObjInfo*, bool isStar,
 			touchgfx::CWRUtil::Q5 &xscr, touchgfx::CWRUtil::Q5 &yscr,
 			float) const;
 

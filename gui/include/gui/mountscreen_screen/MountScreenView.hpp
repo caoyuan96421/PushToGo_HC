@@ -28,16 +28,16 @@ public:
 		}
 		Screen::handleClickEvent(evt);
 	}
-	void handleGestureEvent(const GestureEvent& evt)
-	{
-		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !joyStick1.getRect().intersect(lastPressed.x, lastPressed.y)
-				&& !sliderSpeed.getRect().intersect(lastPressed.x, lastPressed.y) && !cpop.isVisible()
-				&& !coordpop.isVisible())
-		{
-			application().gotoHomeScreenScreenSlideTransitionWest();
-		}
-		Screen::handleGestureEvent(evt);
-	}
+//	void handleGestureEvent(const GestureEvent& evt)
+//	{
+//		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !joyStick1.getRect().intersect(lastPressed.x, lastPressed.y)
+//				&& !sliderSpeed.getRect().intersect(lastPressed.x, lastPressed.y) && !cpop.isVisible()
+//				&& !coordpop.isVisible())
+//		{
+//			application().gotoHomeScreenScreenSlideTransitionWest();
+//		}
+//		Screen::handleGestureEvent(evt);
+//	}
 
 	static const int NUM_SPEEDS = 5;
 	static double SPEEDS[NUM_SPEEDS];

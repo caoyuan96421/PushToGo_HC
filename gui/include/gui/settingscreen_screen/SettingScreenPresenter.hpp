@@ -28,6 +28,21 @@ public:
 
     virtual ~SettingScreenPresenter() {};
 
+    bool isRed(){
+    	return model->isMonochromeRed();
+    }
+
+    void setRed(bool red){
+    	return model->setMonochromeRed(red);
+    }
+
+    int getBrightness(){
+    	return model->getBrightness();
+    }
+
+    void setBrightness(int b){
+    	model->setBrightness(b);
+    }
 
 private:
     SettingScreenPresenter();

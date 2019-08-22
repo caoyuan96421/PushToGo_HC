@@ -76,3 +76,7 @@ void BaseScreenView::setEqCoords(const EquatorialCoordinates& eq)
 	dec_coord.invalidate();
 
 }
+
+void BaseScreenView::showMessage(const char *msg) {
+	messagePopup1.showMessage(msg);
+}

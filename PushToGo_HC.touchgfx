@@ -271,8 +271,8 @@
               "Type": "TriggerClicked"
             },
             "Action": {
-              "ScreenTransitionType": "ScreenTransitionSlide",
-              "ScreenTransitionDirection": "East",
+              "ScreenTransitionType": "ScreenTransitionCover",
+              "ScreenTransitionDirection": "West",
               "ActionComponent": "MountScreen",
               "Type": "ActionGotoScreen"
             }
@@ -285,8 +285,8 @@
               "Type": "TriggerClicked"
             },
             "Action": {
-              "ScreenTransitionType": "ScreenTransitionSlide",
-              "ScreenTransitionDirection": "East",
+              "ScreenTransitionType": "ScreenTransitionCover",
+              "ScreenTransitionDirection": "South",
               "ActionComponent": "SettingScreen",
               "Type": "ActionGotoScreen"
             }
@@ -462,12 +462,26 @@
             "Released": "home_button.png",
             "Alpha": 255,
             "Name": "home_button",
-            "X": 225,
-            "Y": 758,
-            "Width": 47,
-            "Height": 34,
+            "X": 211,
+            "Y": 750,
+            "Width": 69,
+            "Height": 50,
             "Type": "Button",
             "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "CustomContainerDefinitionName": "MessagePopup",
+            "Name": "messagePopup1",
+            "X": 0,
+            "Y": 0,
+            "Width": 480,
+            "Height": 800,
+            "Type": "CustomContainerInstance",
+            "Visible": false,
             "Draggable": false,
             "Clickable": false,
             "Fadeable": false,
@@ -483,8 +497,8 @@
               "Type": "TriggerClicked"
             },
             "Action": {
-              "ScreenTransitionType": "ScreenTransitionSlide",
-              "ScreenTransitionDirection": "West",
+              "ScreenTransitionType": "ScreenTransitionCover",
+              "ScreenTransitionDirection": "East",
               "ActionComponent": "HomeScreen",
               "Type": "ActionGotoScreen"
             }
@@ -1057,7 +1071,7 @@
             "X": 14,
             "Y": 85,
             "Width": 453,
-            "Height": 650,
+            "Height": 562,
             "Type": "ScrollableContainer",
             "Visible": true,
             "Draggable": false,
@@ -1073,7 +1087,7 @@
             "Width": 480,
             "Height": 750,
             "Type": "CustomContainerInstance",
-            "Visible": true,
+            "Visible": false,
             "Draggable": false,
             "Clickable": false,
             "Fadeable": false,
@@ -1101,6 +1115,71 @@
             "Width": 170,
             "Height": 60,
             "Type": "ButtonWithLabel",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "IsHorizontalSlider": true,
+            "BackgroundUnselected": "slidersmall_round_back.png",
+            "BackgroundSelected": "slidersmall_round_fill.png",
+            "Indicator": "__designer\\dark_slider_horizontal_large_indicators_slider_round_nob.png",
+            "BackgroundX": 7,
+            "BackgroundY": 11,
+            "IndicatorPos": 0,
+            "IndicatorMax": 161,
+            "IndicatorMin": 0,
+            "ValueMax": 255,
+            "ValueMin": 0,
+            "InitValue": 0,
+            "Name": "sliderBrightness",
+            "X": 167,
+            "Y": 663,
+            "Width": 229,
+            "Height": 68,
+            "Type": "Slider",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "TextId": "SingleUseId135",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 176,
+              "Green": 46,
+              "Blue": 46
+            },
+            "Alpha": 255,
+            "AutoSize": true,
+            "LineSpacing": 0,
+            "Name": "textArea1_2_1",
+            "X": 14,
+            "Y": 678,
+            "Width": 147,
+            "Height": 38,
+            "Type": "TextArea",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "InitialStatePressed": false,
+            "Pressed": "color_dial_red.png",
+            "Released": "color_dial.png",
+            "Alpha": 255,
+            "Name": "toggleColor",
+            "X": 407,
+            "Y": 663,
+            "Width": 60,
+            "Height": 60,
+            "Type": "ToggleButton",
             "Visible": true,
             "Draggable": false,
             "Clickable": false,
@@ -1151,7 +1230,7 @@
             },
             "TextRotation": "0",
             "Name": "button_zoomout",
-            "X": 405,
+            "X": 415,
             "Y": 475,
             "Width": 60,
             "Height": 60,
@@ -1179,7 +1258,7 @@
             },
             "TextRotation": "0",
             "Name": "button_zoomin",
-            "X": 295,
+            "X": 345,
             "Y": 475,
             "Width": 60,
             "Height": 60,
@@ -1238,43 +1317,15 @@
             "Moveable": false
           },
           {
-            "Pressed": "button2-pressed.png",
-            "Released": "button2.png",
-            "Alpha": 255,
-            "TextId": "SingleUseId71",
-            "ReleasedColor": {
-              "Red": 255,
-              "Green": 255,
-              "Blue": 255
-            },
-            "PressedColor": {
-              "Red": 255,
-              "Green": 255,
-              "Blue": 255
-            },
-            "TextRotation": "0",
-            "Name": "button_goto",
-            "X": 295,
-            "Y": 549,
-            "Width": 170,
-            "Height": 60,
-            "Type": "ButtonWithLabel",
-            "Visible": true,
-            "Draggable": false,
-            "Clickable": false,
-            "Fadeable": false,
-            "Moveable": false
-          },
-          {
             "InitialStatePressed": false,
-            "Pressed": "__designer\\blue_togglebars_toggle_re_small_button_off.png",
-            "Released": "__designer\\blue_togglebars_toggle_re_small_button_on.png",
+            "Pressed": "constell-bright.png",
+            "Released": "constell-dark.png",
             "Alpha": 255,
             "Name": "toggleConstell",
-            "X": 369,
-            "Y": 629,
-            "Width": 96,
-            "Height": 38,
+            "X": 415,
+            "Y": 546,
+            "Width": 60,
+            "Height": 60,
             "Type": "ToggleButton",
             "Visible": true,
             "Draggable": false,
@@ -1283,22 +1334,55 @@
             "Moveable": false
           },
           {
-            "TextId": "SingleUseId119",
-            "TextRotation": "0",
-            "Color": {
-              "Red": 255,
-              "Green": 0,
-              "Blue": 0
-            },
+            "InitialStatePressed": false,
+            "Pressed": "track-bright.png",
+            "Released": "track-dark.png",
             "Alpha": 255,
-            "AutoSize": true,
-            "LineSpacing": 0,
-            "Name": "textArea1",
-            "X": 305,
-            "Y": 639,
-            "Width": 58,
-            "Height": 19,
-            "Type": "TextArea",
+            "Name": "toggleFollow",
+            "X": 345,
+            "Y": 546,
+            "Width": 60,
+            "Height": 60,
+            "Type": "ToggleButton",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Pressed": "button3-pressed.png",
+            "Released": "button3.png",
+            "Alpha": 255,
+            "IconPressed": "goto.png",
+            "IconReleased": "goto.png",
+            "IconX": 7,
+            "IconY": 7,
+            "IconHeight": 50,
+            "IconWidth": 50,
+            "Name": "button_goto",
+            "X": 275,
+            "Y": 475,
+            "Width": 60,
+            "Height": 60,
+            "Type": "ButtonWithIcon",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "InitialStatePressed": false,
+            "Pressed": "eq_on.png",
+            "Released": "eq_off.png",
+            "Alpha": 255,
+            "Name": "toggleEquatorial",
+            "X": 275,
+            "Y": 546,
+            "Width": 60,
+            "Height": 60,
+            "Type": "ToggleButton",
             "Visible": true,
             "Draggable": false,
             "Clickable": false,
@@ -2169,9 +2253,9 @@
             "Alpha": 255,
             "TextId": "SingleUseId124",
             "ReleasedColor": {
-              "Red": 64,
-              "Green": 129,
-              "Blue": 255
+              "Red": 255,
+              "Green": 0,
+              "Blue": 156
             },
             "PressedColor": {
               "Red": 255,
@@ -2321,9 +2405,9 @@
             "Alpha": 255,
             "TextId": "SingleUseId129",
             "ReleasedColor": {
-              "Red": 64,
-              "Green": 236,
-              "Blue": 255
+              "Red": 245,
+              "Green": 0,
+              "Blue": 75
             },
             "PressedColor": {
               "Red": 255,
@@ -3464,6 +3548,116 @@
         "Clickable": false,
         "Fadeable": false,
         "Moveable": false
+      },
+      {
+        "Components": [
+          {
+            "Color": {
+              "Red": 26,
+              "Green": 9,
+              "Blue": 46
+            },
+            "Alpha": 172,
+            "Name": "box2",
+            "X": 0,
+            "Y": 0,
+            "Width": 480,
+            "Height": 800,
+            "Type": "Box",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": true,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Color": {
+              "Red": 74,
+              "Green": 16,
+              "Blue": 54
+            },
+            "Alpha": 255,
+            "Name": "box1",
+            "X": 45,
+            "Y": 207,
+            "Width": 391,
+            "Height": 361,
+            "Type": "Box",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "TextId": "SingleUseId132",
+            "TextRotation": "0",
+            "Color": {
+              "Red": 191,
+              "Green": 177,
+              "Blue": 186
+            },
+            "Alpha": 255,
+            "AutoSize": false,
+            "LineSpacing": 0,
+            "Wildcard1": {
+              "TextId": "SingleUseId133",
+              "UseBuffer": true,
+              "BufferSize": 256
+            },
+            "Name": "messageArea",
+            "X": 61,
+            "Y": 248,
+            "Width": 360,
+            "Height": 197,
+            "Type": "TextArea",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          },
+          {
+            "Pressed": "button2-pressed.png",
+            "Released": "button2.png",
+            "Alpha": 255,
+            "TextId": "SingleUseId134",
+            "ReleasedColor": {
+              "Red": 135,
+              "Green": 135,
+              "Blue": 135
+            },
+            "PressedColor": {
+              "Red": 219,
+              "Green": 170,
+              "Blue": 170
+            },
+            "TextRotation": "0",
+            "Name": "okButton",
+            "X": 156,
+            "Y": 482,
+            "Width": 170,
+            "Height": 60,
+            "Type": "ButtonWithLabel",
+            "Visible": true,
+            "Draggable": false,
+            "Clickable": false,
+            "Fadeable": false,
+            "Moveable": false
+          }
+        ],
+        "Interactions": [],
+        "Name": "MessagePopup",
+        "X": 0,
+        "Y": 0,
+        "Width": 480,
+        "Height": 800,
+        "Type": "CustomContainerDefinition",
+        "Visible": true,
+        "Draggable": false,
+        "Clickable": false,
+        "Fadeable": false,
+        "Moveable": false
       }
     ],
     "TextEntries": [
@@ -3684,10 +3878,6 @@
         "IsResource": false
       },
       {
-        "TextEntryId": "SingleUseId71",
-        "IsResource": false
-      },
-      {
         "TextEntryId": "SingleUseId72",
         "IsResource": false
       },
@@ -3856,10 +4046,6 @@
         "IsResource": false
       },
       {
-        "TextEntryId": "SingleUseId119",
-        "IsResource": false
-      },
-      {
         "TextEntryId": "SingleUseId120",
         "IsResource": false
       },
@@ -3905,6 +4091,22 @@
       },
       {
         "TextEntryId": "SingleUseId131",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId132",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId133",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId134",
+        "IsResource": false
+      },
+      {
+        "TextEntryId": "SingleUseId135",
         "IsResource": false
       }
     ],

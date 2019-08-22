@@ -92,8 +92,8 @@ void HomeScreenViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& s
     {
         //Interaction1
         //When mount_view clicked change screen to MountScreen
-        //Go to MountScreen with screen transition towards East
-        application().gotoMountScreenScreenSlideTransitionEast();
+        //Go to MountScreen with screen transition towards West
+        application().gotoMountScreenScreenCoverTransitionWest();
     }
     else if (&src == &starmap_view)
     {
@@ -106,8 +106,8 @@ void HomeScreenViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& s
     {
         //Interaction2
         //When setting_view clicked change screen to SettingScreen
-        //Go to SettingScreen with screen transition towards East
-        application().gotoSettingScreenScreenSlideTransitionEast();
+        //Go to SettingScreen with screen transition towards South
+        application().gotoSettingScreenScreenCoverTransitionSouth();
     }
     else if (&src == &utility_view)
     {

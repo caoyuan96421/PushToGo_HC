@@ -74,6 +74,20 @@ public:
 	{
 		return king;
 	}
+	bool isMonochromeRed(){
+		return red;
+	}
+	void setMonochromeRed(bool v){
+		red = v;
+	}
+
+	int getBrightness() const {
+		return brightness;
+	}
+
+	void setBrightness(int brightness) {
+		this->brightness = brightness;
+	}
 
 	// Get mount information
 //    double getRA();
@@ -86,11 +100,9 @@ protected:
 	/**
 	 * Pointer to the currently active presenter.
 	 */
-	volatile bool syncImm;bool king;
-	EquatorialCoordinates eq_coord;
-	MountCoordinates mount_coord;
-	LocationCoordinates location;
-	int timezone;
+	bool king;
+	bool red;
+	int brightness;
 	ModelListener* modelListener;
 };
 

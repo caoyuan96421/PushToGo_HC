@@ -763,6 +763,11 @@
               <FilePath>../../gui/src/containers/joystick.cpp</FilePath>
             </File>
             <File>
+              <FileName>MessagePopup.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../gui/src/containers/messagepopup.cpp</FilePath>
+            </File>
+            <File>
               <FileName>Model.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>../../gui/src/model/model.cpp</FilePath>
@@ -868,16 +873,6 @@
               <FilePath>../../generated/images/src/bitmapdatabase.cpp</FilePath>
             </File>
             <File>
-              <FileName>blue_togglebars_toggle_re_small_button_off.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>../../generated/images/src/__designer/blue_togglebars_toggle_re_small_button_off.cpp</FilePath>
-            </File>
-            <File>
-              <FileName>blue_togglebars_toggle_re_small_button_on.cpp</FileName>
-              <FileType>8</FileType>
-              <FilePath>../../generated/images/src/__designer/blue_togglebars_toggle_re_small_button_on.cpp</FilePath>
-            </File>
-            <File>
               <FileName>button1-pressed.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>../../generated/images/src/button1-pressed.cpp</FilePath>
@@ -908,9 +903,29 @@
               <FilePath>../../generated/images/src/button3.cpp</FilePath>
             </File>
             <File>
+              <FileName>color_dial.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/color_dial.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>color_dial_red.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/color_dial_red.cpp</FilePath>
+            </File>
+            <File>
               <FileName>ConfigPopupBase.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>../../generated/gui_generated/src/containers/configpopupbase.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>constell-bright.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/constell-bright.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>constell-dark.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/constell-dark.cpp</FilePath>
             </File>
             <File>
               <FileName>CoordinatePopupBase.cpp</FileName>
@@ -963,6 +978,16 @@
               <FilePath>../../generated/gui_generated/src/dummyscreen_screen/dummyscreenviewbase.cpp</FilePath>
             </File>
             <File>
+              <FileName>eq_off.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/eq_off.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>eq_on.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/eq_on.cpp</FilePath>
+            </File>
+            <File>
               <FileName>Font_DejaVuSans_Bold_40_4bpp.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>../../generated/fonts/src/font_dejavusans_bold_40_4bpp.cpp</FilePath>
@@ -996,6 +1021,11 @@
               <FileName>FrontendApplicationBase.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>../../generated/gui_generated/src/common/frontendapplicationbase.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>goto.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/goto.cpp</FilePath>
             </File>
             <File>
               <FileName>home_button.cpp</FileName>
@@ -1051,6 +1081,11 @@
               <FileName>LanguageGb.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>../../generated/texts/src/languagegb.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>MessagePopupBase.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/gui_generated/src/containers/messagepopupbase.cpp</FilePath>
             </File>
             <File>
               <FileName>moon_small.cpp</FileName>
@@ -1151,6 +1186,16 @@
               <FileName>Texts.cpp</FileName>
               <FileType>8</FileType>
               <FilePath>../../generated/texts/src/texts.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>track-bright.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/track-bright.cpp</FilePath>
+            </File>
+            <File>
+              <FileName>track-dark.cpp</FileName>
+              <FileType>8</FileType>
+              <FilePath>../../generated/images/src/track-dark.cpp</FilePath>
             </File>
             <File>
               <FileName>TypedTextDatabase.cpp</FileName>

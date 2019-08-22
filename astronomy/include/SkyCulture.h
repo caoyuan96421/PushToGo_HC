@@ -107,8 +107,8 @@ public:
 
 	struct Segment
 	{
-		StarInfo *star1;
-		StarInfo *star2;
+		SkyObjInfo *star1;
+		SkyObjInfo *star2;
 		float x1;
 		float y1;
 		float z1;

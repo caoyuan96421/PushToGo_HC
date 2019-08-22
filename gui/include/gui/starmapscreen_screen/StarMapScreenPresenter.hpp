@@ -28,6 +28,8 @@ public:
 
     virtual ~StarMapScreenPresenter() {};
 
+    virtual void setCoords(const EquatorialCoordinates& eq, const MountCoordinates& meq);
+
 private:
     StarMapScreenPresenter();
 

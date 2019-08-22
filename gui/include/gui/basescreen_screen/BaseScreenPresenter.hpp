@@ -103,6 +103,7 @@ public:
 
 	void setTime(time_t timestamp, int tz);
 	void setCoords(const EquatorialCoordinates &eq, const MountCoordinates& meq);
+	void showMessage(const char *msg);
 
 protected:
 	BaseScreenView& view;

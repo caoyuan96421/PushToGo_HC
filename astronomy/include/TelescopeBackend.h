@@ -128,8 +128,9 @@ public:
 
 	static void initialize();
 
-	static void setTime(time_t);
+	static void setTime(time_t, int millisec = 0);
 	static time_t getTime();
+	static double getTimeHR();
 	static int syncTime();
 	static EquatorialCoordinates getEqCoords();
 	static MountCoordinates getMountCoords();

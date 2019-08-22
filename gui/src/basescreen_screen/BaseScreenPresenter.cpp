@@ -26,3 +26,7 @@ void BaseScreenPresenter::setCoords(const EquatorialCoordinates& eq, const Mount
 {
 	view.setEqCoords(eq);
 }
+
+void BaseScreenPresenter::showMessage(const char *msg) {
+	view.showMessage(msg);
+}

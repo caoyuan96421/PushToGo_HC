@@ -10,6 +10,7 @@
 #include <touchgfx/widgets/Box.hpp>
 #include <touchgfx/widgets/TextAreaWithWildcard.hpp>
 #include <touchgfx/widgets/Button.hpp>
+#include <gui/containers/MessagePopup.hpp>
 
 class BaseScreenViewBase : public touchgfx::View<BaseScreenPresenter>
 {
@@ -33,6 +34,7 @@ protected:
     touchgfx::TextAreaWithOneWildcard time;
     touchgfx::TextAreaWithOneWildcard date;
     touchgfx::Button home_button;
+    MessagePopup messagePopup1;
 
     /*
      * Wildcard Buffers

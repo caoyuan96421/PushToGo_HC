@@ -11,7 +11,7 @@
 #include <touchgfx/widgets/ButtonWithLabel.hpp>
 #include <touchgfx/widgets/TextAreaWithWildcard.hpp>
 #include <touchgfx/widgets/ToggleButton.hpp>
-#include <touchgfx/widgets/TextArea.hpp>
+#include <touchgfx/widgets/ButtonWithIcon.hpp>
 
 class StarMapScreenViewBase : public touchgfx::View<StarMapScreenPresenter>
 {
@@ -34,9 +34,10 @@ protected:
     touchgfx::ButtonWithLabel button_zoomin;
     touchgfx::Box box2;
     touchgfx::TextAreaWithOneWildcard textInfo;
-    touchgfx::ButtonWithLabel button_goto;
     touchgfx::ToggleButton toggleConstell;
-    touchgfx::TextArea textArea1;
+    touchgfx::ToggleButton toggleFollow;
+    touchgfx::ButtonWithIcon button_goto;
+    touchgfx::ToggleButton toggleEquatorial;
 
     /*
      * Wildcard Buffers

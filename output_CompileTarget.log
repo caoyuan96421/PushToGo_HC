@@ -1,0 +1,201 @@
+Converting images
+Compiling gui/src/settingscreen_screen/SettingScreenPresenter.cpp
+Compiling gui/src/settingscreen_screen/SettingScreenView.cpp
+Compiling gui/src/polaralignscreen_screen/PolarAlignScreenView.cpp
+Compiling gui/src/polaralignscreen_screen/PolarAlignScreenPresenter.cpp
+Compiling gui/src/dummyscreen_screen/DummyScreenView.cpp
+Compiling gui/src/basescreen_screen/BaseScreenPresenter.cpp
+Compiling gui/src/dummyscreen_screen/DummyScreenPresenter.cpp
+Compiling gui/src/containers/CoordinatePopup.cpp
+Compiling gui/src/containers/JoyStick.cpp
+Compiling gui/src/containers/ConfigPopup.cpp
+Compiling gui/src/basescreen_screen/BaseScreenView.cpp
+Compiling gui/src/starmapscreen_screen/StarMapScreenPresenter.cpp
+Compiling gui/src/starmapscreen_screen/StarMapScreenView.cpp
+Compiling gui/src/homescreen_screen/HomeScreenPresenter.cpp
+Compiling gui/src/homescreen_screen/HomeScreenView.cpp
+Compiling gui/src/mountscreen_screen/MountScreenPresenter.cpp
+Compiling gui/src/mountscreen_screen/MountScreenView.cpp
+Compiling gui/src/widgets/StarMapWidget.cpp
+Compiling gui/src/widgets/AccordionMenu.cpp
+Compiling gui/src/widgets/ButtonItem.cpp
+Compiling gui/src/widgets/ConfigButton.cpp
+Compiling gui/src/widgets/WheelSelector.cpp
+Compiling gui/src/widgets/NumericalWheelSelector.cpp
+Compiling gui/src/model/Model.cpp
+Compiling gui/src/utilityscreen_screen/UtilityScreenPresenter.cpp
+Compiling gui/src/alignscreen_screen/AlignScreenPresenter.cpp
+Compiling gui/src/alignscreen_screen/AlignScreenView.cpp
+Compiling gui/src/utilityscreen_screen/UtilityScreenView.cpp
+Compiling gui/src/common/FrontendApplication.cpp
+Compiling generated/gui_generated/src/settingscreen_screen/SettingScreenViewBase.cpp
+Compiling generated/gui_generated/src/containers/JoyStickBase.cpp
+Compiling generated/gui_generated/src/polaralignscreen_screen/PolarAlignScreenViewBase.cpp
+Compiling generated/gui_generated/src/containers/ConfigPopupBase.cpp
+Compiling generated/gui_generated/src/containers/CoordinatePopupBase.cpp
+Compiling generated/gui_generated/src/dummyscreen_screen/DummyScreenViewBase.cpp
+Compiling generated/gui_generated/src/basescreen_screen/BaseScreenViewBase.cpp
+Compiling generated/gui_generated/src/starmapscreen_screen/StarMapScreenViewBase.cpp
+Compiling generated/gui_generated/src/mountscreen_screen/MountScreenViewBase.cpp
+Compiling generated/gui_generated/src/homescreen_screen/HomeScreenViewBase.cpp
+Compiling generated/gui_generated/src/alignscreen_screen/AlignScreenViewBase.cpp
+Compiling generated/gui_generated/src/utilityscreen_screen/UtilityScreenViewBase.cpp
+Compiling generated/gui_generated/src/common/FrontendApplicationBase.cpp
+Compiling astronomy/src/Debug.cpp
+Compiling astronomy/src/StarCatalog.cpp
+Compiling astronomy/src/SkyCulture.cpp
+Compiling astronomy/src/Comm.cpp
+Compiling astronomy/src/TelescopeBackend.cpp
+Compiling astronomy/src/HYGMag8.cpp
+In file included from target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.h:47:0,
+                 from target/bsp/include/stm32f4xx_hal_conf.h:242,
+                 from target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal.h:48,
+                 from astronomy/src/Debug.cpp:13:
+astronomy/src/Debug.cpp: In function 'void init()':
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc_ex.h:1033:46: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                       UNUSED(tmpreg); \
+                                               
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+astronomy/src/Debug.cpp:32:2: note: in expansion of macro '__HAL_RCC_USART3_CLK_ENABLE'
+  __HAL_RCC_USART3_CLK_ENABLE();
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.h:409:48: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                         UNUSED(tmpreg); \
+                                                 
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+astronomy/src/Debug.cpp:34:2: note: in expansion of macro '__HAL_RCC_GPIOB_CLK_ENABLE'
+  __HAL_RCC_GPIOB_CLK_ENABLE();
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Compiling astronomy/src/CelestialMath.cpp
+Compiling generated/fonts/src/Font_DejaVuSans_Bold_40_4bpp.cpp
+Compiling generated/fonts/src/Kerning_trebucbd_40_4bpp.cpp
+In file included from target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.h:47:0,
+                 from target/bsp/include/stm32f4xx_hal_conf.h:242,
+                 from target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal.h:48,
+                 from astronomy/src/Comm.cpp:16:
+astronomy/src/Comm.cpp: In static member function 'static void Comm::init()':
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.h:545:48: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                         UNUSED(tmpreg); \
+                                                 
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+astronomy/src/Comm.cpp:177:2: note: in expansion of macro '__HAL_RCC_USART6_CLK_ENABLE'
+  __HAL_RCC_USART6_CLK_ENABLE();
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc_ex.h:784:48: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                         UNUSED(tmpreg); \
+                                                 
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+astronomy/src/Comm.cpp:179:2: note: in expansion of macro '__HAL_RCC_GPIOG_CLK_ENABLE'
+  __HAL_RCC_GPIOG_CLK_ENABLE();
+  ^~~~~~~~~~~~~~~~~~~~~~~~~~
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.h:437:48: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                         UNUSED(tmpreg); \
+                                                 
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+astronomy/src/Comm.cpp:224:2: note: in expansion of macro '__HAL_RCC_DMA2_CLK_ENABLE'
+  __HAL_RCC_DMA2_CLK_ENABLE();
+  ^~~~~~~~~~~~~~~~~~~~~~~~~
+Compiling generated/fonts/src/Table_trebuc_24_4bpp.cpp
+Compiling generated/fonts/src/Table_trebucbd_40_4bpp.cpp
+In file included from target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rtc.h:47:0,
+                 from astronomy/src/TelescopeBackend.cpp:22:
+astronomy/src/TelescopeBackend.cpp: In function 'void rtc_init()':
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.h:505:48: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                         UNUSED(tmpreg); \
+                                                 
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+astronomy/src/TelescopeBackend.cpp:146:2: note: in expansion of macro '__HAL_RCC_PWR_CLK_ENABLE'
+  __HAL_RCC_PWR_CLK_ENABLE();
+  ^~~~~~~~~~~~~~~~~~~~~~~~
+Compiling generated/fonts/src/Kerning_DejaVuSans_Bold_40_4bpp.cpp
+Compiling generated/fonts/src/Font_trebuc_16_4bpp.cpp
+Compiling generated/fonts/src/FontGetters.cpp
+Compiling generated/fonts/src/Table_trebuc_32_4bpp.cpp
+Compiling generated/fonts/src/Kerning_trebuc_16_4bpp.cpp
+Compiling generated/fonts/src/Font_trebuc_24_4bpp.cpp
+Compiling generated/fonts/src/Kerning_trebuc_24_4bpp.cpp
+Compiling generated/fonts/src/Table_DejaVuSans_Bold_40_4bpp.cpp
+Compiling generated/fonts/src/Font_trebuc_32_4bpp.cpp
+Compiling generated/fonts/src/Font_trebucbd_40_4bpp.cpp
+Compiling generated/fonts/src/Table_trebuc_16_4bpp.cpp
+Compiling generated/fonts/src/Kerning_trebuc_32_4bpp.cpp
+Compiling generated/fonts/src/ApplicationFontProvider.cpp
+Compiling generated/images/src/track-dark.cpp
+Compiling generated/images/src/constell-bright.cpp
+Compiling generated/images/src/BitmapDatabase.cpp
+Compiling generated/images/src/track-bright.cpp
+Compiling generated/images/src/constell-dark.cpp
+Compiling generated/texts/src/LanguageGb.cpp
+Compiling generated/texts/src/TypedTextDatabase.cpp
+Compiling generated/texts/src/Texts.cpp
+Compiling target/os/FreeRTOS7.6.0/OSWrappers.cpp
+Compiling target/bsp/source/BoardConfiguration.cpp
+Compiling target/main.cpp
+Compiling target/os/FreeRTOS7.6.0/Source/croutine.c
+Compiling target/os/FreeRTOS7.6.0/Source/list.c
+Compiling target/os/FreeRTOS7.6.0/Source/queue.c
+Compiling target/os/FreeRTOS7.6.0/Source/portable/MemMang/heap_2.c
+Compiling target/os/FreeRTOS7.6.0/Source/tasks.c
+Compiling target/os/FreeRTOS7.6.0/Source/timers.c
+Compiling target/os/FreeRTOS7.6.0/Source/portable/GCC/ARM_CM4F/port.c
+In file included from target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.h:47:0,
+                 from target/bsp/include/stm32f4xx_hal_conf.h:242,
+                 from target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal.h:48,
+                 from target/bsp/source/BoardConfiguration.cpp:50:
+target/bsp/source/BoardConfiguration.cpp: In function 'void touchgfx::hw_init()':
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc_ex.h:749:48: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                         UNUSED(tmpreg); \
+                                                 
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+target/bsp/source/BoardConfiguration.cpp:182:5: note: in expansion of macro '__HAL_RCC_CRC_CLK_ENABLE'
+     __HAL_RCC_CRC_CLK_ENABLE();
+     ^~~~~~~~~~~~~~~~~~~~~~~~
+target/bsp/source/BoardConfiguration.cpp: In function 'void SystemClock_Config()':
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc.h:505:48: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                         UNUSED(tmpreg); \
+                                                 
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+target/bsp/source/BoardConfiguration.cpp:328:5: note: in expansion of macro '__HAL_RCC_PWR_CLK_ENABLE'
+     __HAL_RCC_PWR_CLK_ENABLE();
+     ^~~~~~~~~~~~~~~~~~~~~~~~
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_pwr_ex.h:156:68: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                                             UNUSED(tmpreg);                                     \
+                                                                     
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+target/bsp/source/BoardConfiguration.cpp:333:5: note: in expansion of macro '__HAL_PWR_VOLTAGESCALING_CONFIG'
+     __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+target/bsp/source/BoardConfiguration.cpp: In function 'uint8_t LCD_Init()':
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rcc_ex.h:791:48: warning: conversion to void will not access object of type 'volatile uint32_t {aka volatile long unsigned int}'
+                                         UNUSED(tmpreg); \
+                                                 
+target/bsp/include/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_def.h:86:27: note: in definition of macro 'UNUSED'
+ #define UNUSED(x) ((void)(x))
+                           ^
+target/bsp/source/BoardConfiguration.cpp:514:5: note: in expansion of macro '__HAL_RCC_GPIOJ_CLK_ENABLE'
+     __HAL_RCC_GPIOJ_CLK_ENABLE();
+     ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Linking build/bin/target.elf
+Producing additional output formats...
+  target.hex   - Combined internal+external hex
+  intflash.elf - Internal flash, elf debug
+  intflash.hex - Internal flash, hex
+  extflash.bin - External flash, binary

@@ -25,25 +25,38 @@ public:
 		}
 		Screen::handleClickEvent(evt);
 	}
-	void handleGestureEvent(const GestureEvent& evt)
-	{
-		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !starmap.getRect().intersect(lastPressed.x, lastPressed.y))
-		{
-			application().gotoHomeScreenScreenSlideTransitionWest();
+//	void handleGestureEvent(const GestureEvent& evt)
+//	{
+//		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !starmap.getRect().intersect(lastPressed.x, lastPressed.y))
+//		{
+//			application().gotoHomeScreenScreenSlideTransitionWest();
+//		}
+//		Screen::handleGestureEvent(evt);
+//	}
+	void setCenter(const EquatorialCoordinates& eq){
+		if (follow){
+			starmap.aimAt(eq);
 		}
-		Screen::handleGestureEvent(evt);
 	}
 protected:
 
 	StarMapWidget starmap;
 	touchgfx::Callback<StarMapScreenView, const AbstractButton&> buttonZoomCallback;
+	touchgfx::Callback<StarMapScreenView, const AbstractButton&> buttonGotoCallback;
 	touchgfx::Callback<StarMapScreenView, const AbstractButton&> toggleConstellCallback;
-	touchgfx::Callback<StarMapScreenView, const StarInfo *> starSelectedCallback;
+	touchgfx::Callback<StarMapScreenView, const AbstractButton&> toggleFollowCallback;
+	touchgfx::Callback<StarMapScreenView, const SkyObjInfo *> starSelectedCallback;
+	touchgfx::Callback<StarMapScreenView> starMapAnimatedCallback;
 	unsigned long tim;
+	bool follow;
+	EquatorialCoordinates goto_target;
 
 	void buttonZoomPressed(const AbstractButton& src);
 	void toggleConstellSwitched(const AbstractButton& src);
-	void starSelected(const StarInfo *);
+	void toggleFollowSwitched(const AbstractButton& src);
+	void starSelected(const SkyObjInfo *);
+	void goTo(const AbstractButton &src);
+	void animationFinished();
 
 	struct
 	{

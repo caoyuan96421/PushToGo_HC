@@ -80,7 +80,7 @@ void AlignScreenView::updateMenu()
 	selectedCandidate = NULL;
 
 	clearMenu(container_candidates);
-	StarCatalog::getInstance().query_common(&callback, -180, 180, -90, 90, this, 100);
+	StarCatalog::getInstance().query_stars_common(&callback, -180, 180, -90, 90, this, 100);
 
 	container_candidates.setHeight(height * num_candidates);
 	scrollableContainer1.childGeometryChanged();
@@ -96,7 +96,7 @@ void AlignScreenView::updateMenu()
 		const char *name = "Undefined star";
 		TelescopeBackend::getAlignmentStar(i, as);
 
-		StarInfo *star = StarCatalog::getInstance().searchByCoordinates(as.star_ref.ra, as.star_ref.dec, 1e-3);
+		SkyObjInfo *star = StarCatalog::getInstance().searchByCoordinates(as.star_ref.ra, as.star_ref.dec, 1e-3);
 		if (star)
 		{
 			name = star->name;
@@ -134,13 +134,13 @@ void AlignScreenView::updateMenu()
 	getRootContainer().invalidate();
 }
 
-void AlignScreenView::callback(StarInfo* s, void* arg)
+void AlignScreenView::callback(SkyObjInfo* s, void* arg)
 {
 	if (arg)
 		((AlignScreenView *) arg)->_callback(s);
 }
 
-void AlignScreenView::_callback(StarInfo* star)
+void AlignScreenView::_callback(SkyObjInfo* star)
 {
 
 	EquatorialCoordinates eq(star->DEC, star->RA);
@@ -182,7 +182,7 @@ void AlignScreenView::starSelected(const AbstractButton& src)
 		selectedCandidate = &button;
 		button.setReleasedColor(selectedColor);
 
-		StarInfo *star = (StarInfo *) button.getUserData();
+		SkyObjInfo *star = (SkyObjInfo *) button.getUserData();
 
 		EquatorialCoordinates eq(star->DEC, star->RA);
 
@@ -220,7 +220,7 @@ void AlignScreenView::buttonAddPressed(const AbstractButton&)
 {
 	if (selectedCandidate != NULL)
 	{
-		StarInfo *star = (StarInfo *) selectedCandidate->getUserData();
+		SkyObjInfo *star = (SkyObjInfo *) selectedCandidate->getUserData();
 		if (!star)
 			return;
 
@@ -229,7 +229,7 @@ void AlignScreenView::buttonAddPressed(const AbstractButton&)
 		ButtonItem *b = (ButtonItem *) container_selected.getFirstChild();
 		while (b)
 		{
-			if (((StarInfo *) b->getUserData()) == star)
+			if (((SkyObjInfo *) b->getUserData()) == star)
 			{
 				alreadySelected = true;
 				break;
@@ -284,7 +284,7 @@ void AlignScreenView::buttonDeletePressed(const AbstractButton&)
 	if (selectedAlignment != NULL && selectedAlignment->getUserData() != NULL)
 	{
 		ButtonItem *d = (ButtonItem *) selectedAlignment->getNextSibling();
-		StarInfo *si = (StarInfo*) selectedAlignment->getUserData();
+		SkyObjInfo *si = (SkyObjInfo*) selectedAlignment->getUserData();
 
 		while (d)
 		{
@@ -327,7 +327,7 @@ void AlignScreenView::buttonGotoPressed(const AbstractButton&)
 {
 	if (selectedAlignment != NULL && selectedAlignment->getUserData() != NULL)
 	{
-		StarInfo *star = (StarInfo*) selectedAlignment->getUserData();
+		SkyObjInfo *star = (SkyObjInfo*) selectedAlignment->getUserData();
 		TelescopeBackend::goTo(EquatorialCoordinates(star->DEC, star->RA));
 	}
 }
@@ -341,7 +341,7 @@ void AlignScreenView::buttonAlignPressed(const AbstractButton&)
 {
 	if (selectedAlignment != NULL && selectedAlignment->getUserData() != NULL)
 	{
-		StarInfo *si = (StarInfo*) selectedAlignment->getUserData();
+		SkyObjInfo *si = (SkyObjInfo*) selectedAlignment->getUserData();
 		int index = -1;
 		for (int i = 0; i < num_alignment; i++)
 		{
