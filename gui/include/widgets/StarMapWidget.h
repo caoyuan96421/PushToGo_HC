@@ -30,7 +30,8 @@ public:
 	virtual bool drawCanvasWidget(const touchgfx::Rect &invalidatedArea) const;
 	virtual void draw(const touchgfx::Rect &invalidatedArea) const;
 
-	void aimAt(double ra, double dec, bool smooth = false, touchgfx::GenericCallback<> *cb = NULL) {
+	void setCenter(double ra, double dec, bool smooth = false,
+			touchgfx::GenericCallback<> *cb = NULL) {
 		ra = remainder(ra, 360.0);
 		if (dec > 90.0)
 			dec = 90.0;
@@ -55,15 +56,15 @@ public:
 		invalidate();
 	}
 
-	void aimAt(const EquatorialCoordinates &eq) {
-		aimAt(eq.ra, eq.dec);
+	void setCenter(const EquatorialCoordinates &eq) {
+		setCenter(eq.ra, eq.dec);
 	}
 
-	EquatorialCoordinates getAim() {
+	EquatorialCoordinates getCenter() {
 		return EquatorialCoordinates(dec_ctr, ra_ctr);
 	}
 
-	void setFOV(double fov) {
+	void setFoV(double fov) {
 		if (fov > 45.0)
 			fov = 45.0;
 		if (fov < 0.5) {
@@ -75,19 +76,19 @@ public:
 		invalidate();
 	}
 
-	void setRotation(double r) {
-		rot = r;
-		updateView();
-		invalidate();
-	}
+//	void setRotation(double r) {
+//		rot = r;
+//		updateView();
+//		invalidate();
+//	}
 
-	double getFOV() {
+	double getFoV() {
 		return fovw;
 	}
 
-	double getRotation() {
-		return rot;
-	}
+//	double getRotation() {
+//		return rot;
+//	}
 
 	double getRA() {
 		return ra_ctr;
@@ -138,6 +139,16 @@ public:
 
 	void setDraggable(bool draggable) {
 		this->draggable = draggable;
+	}
+
+	bool isEquatorial() const {
+		return equatorial;
+	}
+
+	void setEquatorial(bool equatorial) {
+		this->equatorial = equatorial;
+		updateView(); // Immdiately update
+		invalidate();
 	}
 
 protected:
@@ -199,6 +210,7 @@ private:
 	unsigned long tim;
 	time_t timestamp;
 	bool draggable;
+	bool equatorial;
 	bool moveAnimationRunning; ///< Boolean that is true if the animation is running
 	uint16_t moveAnimationCounter; ///< Counter that is equal to the current step in the animation
 //	uint16_t       moveAnimationDelay;     ///< A delay that is applied before animation start. Expressed in ticks.
@@ -232,7 +244,10 @@ private:
 		MoonPhase phase;
 		EquatorialCoordinatesWithDist accurate_pos;
 		PlanetMoon::Object obj;
-
+		SolarSystemInfo(){
+			type = SKYOBJ_SOLARSYSTEM;
+			obj = PlanetMoon::SUN;
+		}
 		virtual bool isPlanet() const {
 			return (obj != PlanetMoon::SUN) && (obj != PlanetMoon::MOON);
 		}
@@ -254,7 +269,7 @@ private:
 	void _drawmoon(touchgfx::Canvas &canvas) const;
 	void _drawticks(touchgfx::Canvas &canvas, touchgfx::CWRUtil::Q5 x,
 			touchgfx::CWRUtil::Q5 y, touchgfx::CWRUtil::Q5 r) const;
-	void _drawcross(touchgfx::Canvas &canvas) const;
+	void _drawcross(touchgfx::Canvas &canvas, touchgfx::CWRUtil::Q5 x_ctr, touchgfx::CWRUtil::Q5 y_ctr, touchgfx::colortype color) const;
 	void _drawconstell(const touchgfx::Rect &invalidatedArea) const;
 	void _drawline(int16_t x0, int16_t y0, int16_t x1, int16_t y1,
 			const touchgfx::Rect &invalid, touchgfx::colortype color,

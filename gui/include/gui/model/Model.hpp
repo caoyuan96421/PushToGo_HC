@@ -89,6 +89,38 @@ public:
 		this->brightness = brightness;
 	}
 
+	bool isEquatorial() const {
+		return equatorial;
+	}
+
+	void setEquatorial(bool equatorial) {
+		this->equatorial = equatorial;
+	}
+
+	bool isFollow() const {
+		return follow;
+	}
+
+	void setFollow(bool follow) {
+		this->follow = follow;
+	}
+
+	bool isShowConstellation() const {
+		return showConstellation;
+	}
+
+	void setShowConstellation(bool showConstellation) {
+		this->showConstellation = showConstellation;
+	}
+
+	float getFoV() const {
+		return fov;
+	}
+
+	void setFoV(float fov) {
+		this->fov = fov;
+	}
+
 	// Get mount information
 //    double getRA();
 //    double getDEC();
@@ -103,6 +135,10 @@ protected:
 	bool king;
 	bool red;
 	int brightness;
+	bool follow;
+	bool showConstellation;
+	bool equatorial;
+	float fov;
 	ModelListener* modelListener;
 };
 

@@ -33,11 +33,7 @@ public:
 //		}
 //		Screen::handleGestureEvent(evt);
 //	}
-	void setCenter(const EquatorialCoordinates& eq){
-		if (follow){
-			starmap.aimAt(eq);
-		}
-	}
+	void updateCenter(const EquatorialCoordinates& eq);
 protected:
 
 	StarMapWidget starmap;
@@ -45,15 +41,18 @@ protected:
 	touchgfx::Callback<StarMapScreenView, const AbstractButton&> buttonGotoCallback;
 	touchgfx::Callback<StarMapScreenView, const AbstractButton&> toggleConstellCallback;
 	touchgfx::Callback<StarMapScreenView, const AbstractButton&> toggleFollowCallback;
+	touchgfx::Callback<StarMapScreenView, const AbstractButton&> toggleEquatorialCallback;
 	touchgfx::Callback<StarMapScreenView, const SkyObjInfo *> starSelectedCallback;
 	touchgfx::Callback<StarMapScreenView> starMapAnimatedCallback;
 	unsigned long tim;
 	bool follow;
 	EquatorialCoordinates goto_target;
+	const SkyObjInfo *selected_star;
 
 	void buttonZoomPressed(const AbstractButton& src);
 	void toggleConstellSwitched(const AbstractButton& src);
 	void toggleFollowSwitched(const AbstractButton& src);
+	void toggleEquatorialSwitched(const AbstractButton& src);
 	void starSelected(const SkyObjInfo *);
 	void goTo(const AbstractButton &src);
 	void animationFinished();

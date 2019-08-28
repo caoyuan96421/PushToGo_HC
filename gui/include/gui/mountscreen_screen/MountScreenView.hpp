@@ -28,6 +28,9 @@ public:
 		}
 		Screen::handleClickEvent(evt);
 	}
+	void forceJoystickPosition(float x, float y){
+		joyStick1.forcePosition(x, y);
+	}
 //	void handleGestureEvent(const GestureEvent& evt)
 //	{
 //		if (evt.getType() == GestureEvent::SWIPE_HORIZONTAL && evt.getVelocity() > MIN_SWIPE_VELOCITY && !joyStick1.getRect().intersect(lastPressed.x, lastPressed.y)

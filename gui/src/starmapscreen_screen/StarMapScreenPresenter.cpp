@@ -19,5 +19,5 @@ void StarMapScreenPresenter::deactivate()
 void StarMapScreenPresenter::setCoords(const EquatorialCoordinates &eq,
 		const MountCoordinates &meq) {
 	BaseScreenPresenter::setCoords(eq, meq);
-	view.setCenter(eq);
+	view.updateCenter(eq);
 }

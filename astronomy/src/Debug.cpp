@@ -13,6 +13,7 @@
 #include "stm32f4xx_hal.h"
 #include "FreeRTOS.h"
 #include "task.h"
+#include "semphr.h"
 
 static const uint32_t timeout = 300;
 static UART_HandleTypeDef huart;
@@ -70,6 +71,10 @@ static void write(const char *buf, size_t len) {
 #endif
 }
 
+#ifndef SIMULATOR
+static xSemaphoreHandle debug_mutex = xSemaphoreCreateMutex();
+#endif
+
 void debug_if(int condition, const char *format, ...) {
 	char buf[1024];
 #if !defined(NDEBUG)
@@ -78,7 +83,9 @@ void debug_if(int condition, const char *format, ...) {
 		va_start(args, format);
 		int len = vsnprintf(buf, sizeof(buf), format, args);
 		va_end(args);
+		xSemaphoreTake(debug_mutex, portMAX_DELAY);
 		write(buf, len);
+		xSemaphoreGive(debug_mutex);
 	}
 #endif
 }

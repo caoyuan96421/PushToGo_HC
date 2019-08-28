@@ -31,6 +31,7 @@ public:
 	}
 
 	virtual void setCoords(const EquatorialCoordinates &eq, const MountCoordinates& meq);
+	virtual void joystickMoved(float x, float y);
 
 private:
 	MountScreenPresenter();

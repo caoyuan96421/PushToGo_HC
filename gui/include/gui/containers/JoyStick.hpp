@@ -5,22 +5,29 @@
 #include <touchgfx/Callback.hpp>
 #include <touchgfx/widgets/AbstractButton.hpp>
 
-class JoyStick: public JoyStickBase
-{
+class JoyStick: public JoyStickBase {
 public:
 	JoyStick();
-	virtual ~JoyStick()
-	{
+	virtual ~JoyStick() {
 	}
 
-	void handleClickEvent(const ClickEvent &);
-	void handleDragEvent(const DragEvent &);
+	void handleClickEvent(const ClickEvent&);
+	void handleDragEvent(const DragEvent&);
 
 	void resetStick();
 
-	void setPositionChangedCallback(void (*cb)(float, float))
-	{
+	void setPositionChangedCallback(void (*cb)(float, float)) {
 		posChangedCallback = cb;
+	}
+
+	void forcePosition(float x, float y) {
+		if (fabsf(x) < 0.1 && fabsf(y) < 0.1) {
+			setTouchable(true);
+		} else {
+			// Disable touch. Update is through Model
+			setTouchable(false);
+			handle.setXY(x / 2 * getWidth(), -y / 2 * getHeight());
+		}
 	}
 
 	static const float thd; // Threshold

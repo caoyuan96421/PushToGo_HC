@@ -21,10 +21,13 @@
 #define HC_RX		GPIO_PIN_9
 #define HC_AF		GPIO_AF8_USART6
 #define HC_TX_DMA_STREAM DMA2_Stream7
+#define HC_RX_DMA_STREAM DMA2_Stream1
 #define HC_TX_DMA_REQUEST DMA_CHANNEL_5
+#define HC_RX_DMA_REQUEST DMA_CHANNEL_5
 #define HC_TX_DMA_IRQn	DMA2_Stream7_IRQn
+#define HC_RX_DMA_IRQn	DMA2_Stream1_IRQn
 #define HC_USART_IRQn	USART6_IRQn
-#define HC_BAUD 115200
+#define HC_BAUD 1152000
 #define BUF_SIZE 512
 
 UART_HandleTypeDef huart;
@@ -64,83 +67,77 @@ DMA_HandleTypeDef rx_dma;
 xSemaphoreHandle tx_sem;
 xSemaphoreHandle rx_sem;
 
-volatile bool tx_complete;
-volatile bool rx_error;
+//volatile bool tx_complete;
+//volatile bool rx_error;
 
-int c1 = 0;
-int c2 = 0;
+//int c1 = 0;
+//int c2 = 0;
 
-extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
-	tx_complete = true;
-	c1++;
-}
-
-extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
-	rx_error = true;
-}
+//extern "C" void HAL_UART_TxCpltCallback(UART_HandleTypeDef *huart){
+//	tx_complete = true;
+//	c1++;
+//}
+//
+//extern "C" void HAL_UART_ErrorCallback(UART_HandleTypeDef *huart){
+//	rx_error = true;
+//}
 
 extern "C" void USART6_IRQHandler() {
-	uint8_t *ptr = huart.pRxBuffPtr;
+	uint32_t isr = huart.Instance->SR;
+	uint32_t errorflags =
+			(isr
+					& (uint32_t) (USART_SR_PE | USART_SR_FE | USART_SR_ORE
+							| USART_SR_NE));
+	bool start_rx = false;
+	bool start_tx = false;
 	portBASE_TYPE px = pdFALSE;
-	bool was_tx_ongoing = (huart.State & HAL_UART_STATE_BUSY_TX) == HAL_UART_STATE_BUSY_TX;
-	tx_complete = false;
-	rx_error = false;
+	// Handle read
+	if (errorflags) {
+		__HAL_UART_CLEAR_FLAG(&huart, errorflags);
+		// Stop DMA transfer
+		huart.Instance->CR3 &= ~USART_CR3_DMAR;
+		HAL_DMA_Abort(huart.hdmarx);
+		rx_head = rx_tail = rx_start; // Discard all data
+		// Restart
+		start_rx = true;
+	} else if (__HAL_UART_GET_IT_SOURCE(&huart, UART_IT_RXNE) != RESET) {
+		// Not checking the isr flag because it's cleared by DMA
+		__HAL_UART_CLEAR_FLAG(&huart, USART_SR_RXNE);
 
-	// Call STM handler
-	HAL_UART_IRQHandler(&huart);
+		int avail_before = available_rx();
 
-	// Error codes
-	if (rx_error) {
-		error_count++;
-
-		if (was_tx_ongoing && !tx_complete) {
-			// TX ongoing but not finished yet, we should continue even though there is an error in RX
-			huart.State = HAL_UART_STATE_BUSY_TX;
-		}
-
-		// Disable all interrupts
-		__HAL_UART_DISABLE_IT(&huart, UART_IT_RXNE);
-		__HAL_UART_DISABLE_IT(&huart, UART_IT_PE);
-		__HAL_UART_DISABLE_IT(&huart, UART_IT_ERR);
-		(void) huart.Instance->DR; // dummy read to clear RXNE
-		huart.ErrorCode = 0; // Clear error
-
-		size_t rx_len = 0;
-		if (rx_tail < rx_head) {
-			rx_len = rx_head - rx_tail - 1;
-		} else {
-			if (rx_head != rx_start)
-				rx_len = rx_end - rx_tail;
-			else
-				rx_len = rx_end - rx_tail - 1; // If rx_head=0, rx_tail=N-1, the queue is full and nothing can be read
-		}
-		if (rx_len > 0) {
-			// Start next reception
-			HAL_UART_Receive_IT(&huart, (uint8_t*) rx_tail, rx_len);
-		}
-	} else if (huart.pRxBuffPtr != ptr) { // Received something, then ptr would be increased
-		rx_tail++; // Push the queue
+		// update tail of rx queue
+		rx_tail = rx_start + (BUF_SIZE - rx_dma.Instance->NDTR);
 		if (rx_tail == rx_end)
 			rx_tail = rx_start;
+		if (avail_before > available_rx()) { // Overrun occurred. Discard old data
+			rx_head = rx_tail + 1;
+			if (rx_head == rx_end)
+				rx_head = rx_start;
+		}
+
 		// Signal the waiting thread
 		xSemaphoreGiveFromISR(rx_sem, &px);
-		if ((huart.State & HAL_UART_STATE_BUSY_RX) != HAL_UART_STATE_BUSY_RX) {
-			size_t rx_len = 0;
-			if (rx_tail < rx_head) {
-				rx_len = rx_head - rx_tail - 1;
-			} else {
-				if (rx_head != rx_start)
-					rx_len = rx_end - rx_tail;
-				else
-					rx_len = rx_end - rx_tail - 1; // If rx_head=0, rx_tail=N-1, the queue is full and nothing can be read
-			}
-			if (rx_len > 0) {
-				// Start next reception
-				HAL_UART_Receive_IT(&huart, (uint8_t*) rx_tail, rx_len);
-			}
-		}
 	}
-	if (tx_complete) { // TX complete, prepare next transmission
+	// Handle write
+	if ((isr & USART_SR_TC) != RESET
+			&& __HAL_UART_GET_IT_SOURCE(&huart, UART_IT_TC) != RESET) {
+		__HAL_UART_DISABLE_IT(&huart, UART_IT_TC);
+		huart.State = HAL_UART_STATE_READY;
+
+		// Signal the waiting thread
+		xSemaphoreGiveFromISR(tx_sem, &px);
+
+		// Start new tx
+		start_tx = true;
+	}
+
+	if (start_rx) {
+		HAL_UART_Receive_DMA(&huart, rx_start, BUF_SIZE);
+		__HAL_UART_ENABLE_IT(&huart, UART_IT_RXNE);
+	}
+
+	if (start_tx) {
 		size_t tx_len = 0;
 		// Setup next transfer
 		tx_head += huart.TxXferSize;
@@ -155,16 +152,99 @@ extern "C" void USART6_IRQHandler() {
 			// Start next transmission
 			HAL_UART_Transmit_DMA(&huart, (uint8_t*) tx_head, tx_len);
 		}
-		// Signal the tx_thread for completion
-		xSemaphoreGiveFromISR(tx_sem, &px);
 	}
+
 	portEND_SWITCHING_ISR(px);
+//	uint8_t *ptr = huart.pRxBuffPtr;
+//	bool was_tx_ongoing = (huart.State & HAL_UART_STATE_BUSY_TX) == HAL_UART_STATE_BUSY_TX;
+//	tx_complete = false;
+//	rx_error = false;
+//
+//	// Call STM handler
+//	HAL_UART_IRQHandler(&huart);
+//
+//	// Error codes
+//	if (rx_error) {
+//		error_count++;
+//
+//		if (was_tx_ongoing && !tx_complete) {
+//			// TX ongoing but not finished yet, we should continue even though there is an error in RX
+//			huart.State = HAL_UART_STATE_BUSY_TX;
+//		}
+//
+//		// Disable all interrupts
+//		__HAL_UART_DISABLE_IT(&huart, UART_IT_RXNE);
+//		__HAL_UART_DISABLE_IT(&huart, UART_IT_PE);
+//		__HAL_UART_DISABLE_IT(&huart, UART_IT_ERR);
+//		(void) huart.Instance->DR; // dummy read to clear RXNE
+//		huart.ErrorCode = 0; // Clear error
+//
+//		size_t rx_len = 0;
+//		if (rx_tail < rx_head) {
+//			rx_len = rx_head - rx_tail - 1;
+//		} else {
+//			if (rx_head != rx_start)
+//				rx_len = rx_end - rx_tail;
+//			else
+//				rx_len = rx_end - rx_tail - 1; // If rx_head=0, rx_tail=N-1, the queue is full and nothing can be read
+//		}
+//		if (rx_len > 0) {
+//			// Start next reception
+//			HAL_UART_Receive_IT(&huart, (uint8_t*) rx_tail, rx_len);
+//		}
+//	} else if (huart.pRxBuffPtr != ptr) { // Received something, then ptr would be increased
+//		rx_tail++; // Push the queue
+//		if (rx_tail == rx_end)
+//			rx_tail = rx_start;
+//		// Signal the waiting thread
+//		xSemaphoreGiveFromISR(rx_sem, &px);
+//		if ((huart.State & HAL_UART_STATE_BUSY_RX) != HAL_UART_STATE_BUSY_RX) {
+//			size_t rx_len = 0;
+//			if (rx_tail < rx_head) {
+//				rx_len = rx_head - rx_tail - 1;
+//			} else {
+//				if (rx_head != rx_start)
+//					rx_len = rx_end - rx_tail;
+//				else
+//					rx_len = rx_end - rx_tail - 1; // If rx_head=0, rx_tail=N-1, the queue is full and nothing can be read
+//			}
+//			if (rx_len > 0) {
+//				// Start next reception
+//				HAL_UART_Receive_IT(&huart, (uint8_t*) rx_tail, rx_len);
+//			}
+//		}
+//	}
+//	if (tx_complete) { // TX complete, prepare next transmission
+//		size_t tx_len = 0;
+//		// Setup next transfer
+//		tx_head += huart.TxXferSize;
+//		if (tx_head >= tx_end)
+//			tx_head -= BUF_SIZE;
+//		if (tx_tail >= tx_head) {
+//			tx_len = tx_tail - tx_head;
+//		} else {
+//			tx_len = tx_end - tx_head;
+//		}
+//		if (tx_len > 0) {
+//			// Start next transmission
+//			HAL_UART_Transmit_DMA(&huart, (uint8_t*) tx_head, tx_len);
+//		}
+//		// Signal the tx_thread for completion
+//		xSemaphoreGiveFromISR(tx_sem, &px);
+//	}
+//	portEND_SWITCHING_ISR(px);
 }
 
+// TX DMA
 extern "C" void DMA2_Stream7_IRQHandler() {
 	HAL_DMA_IRQHandler(&tx_dma);
-	c2++;
+//	c2++;
 }
+
+// RX DMA
+//extern "C" void DMA2_Stream6_IRQHandler() {
+//	HAL_DMA_IRQHandler(&rx_dma);
+//}
 
 #endif
 
@@ -183,7 +263,7 @@ void Comm::init() {
 	 */
 	GPIO_InitStruct.Pin = HC_TX | HC_RX;
 	GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
 	GPIO_InitStruct.Alternate = HC_AF;
 	HAL_GPIO_Init(HC_PORT, &GPIO_InitStruct);
@@ -221,9 +301,29 @@ void Comm::init() {
 	huart.hdmatx = &tx_dma;
 	tx_dma.Parent = &huart;
 
+	DMA_InitTypeDef &e = rx_dma.Init;
+
+	e.Direction = DMA_PERIPH_TO_MEMORY;
+	e.MemDataAlignment = DMA_MDATAALIGN_BYTE;
+	e.MemInc = DMA_MINC_ENABLE;
+	e.PeriphDataAlignment = DMA_PDATAALIGN_BYTE;
+	e.PeriphInc = DMA_PINC_DISABLE;
+	e.Mode = DMA_CIRCULAR;
+	e.Priority = DMA_PRIORITY_MEDIUM;
+	e.FIFOMode = DMA_FIFOMODE_DISABLE;
+	e.FIFOThreshold = DMA_FIFO_THRESHOLD_HALFFULL;
+	e.MemBurst = DMA_MBURST_SINGLE;
+	e.PeriphBurst = DMA_PBURST_SINGLE;
+	e.Channel = HC_RX_DMA_REQUEST;
+
+	rx_dma.Instance = HC_RX_DMA_STREAM;
+	huart.hdmarx = &rx_dma;
+	rx_dma.Parent = &huart;
+
 	__HAL_RCC_DMA2_CLK_ENABLE();
 
 	HAL_DMA_Init(&tx_dma);
+	HAL_DMA_Init(&rx_dma);
 
 	//  UART IRQ
 	IRQn_Type irq_n = HC_USART_IRQn;
@@ -232,7 +332,7 @@ void Comm::init() {
 	NVIC_SetPriority(irq_n, 10);
 	NVIC_EnableIRQ(irq_n);
 
-	// DMA IRQ
+	// TX DMA IRQ
 	irq_n = HC_TX_DMA_IRQn;
 	NVIC_ClearPendingIRQ(irq_n);
 	NVIC_DisableIRQ(irq_n);
@@ -244,8 +344,13 @@ void Comm::init() {
 	tx_sem = xSemaphoreCreateBinary();
 
 	// Enable RX immediately
-	HAL_UART_Receive_IT(&huart, (uint8_t*) rx_start,
-	BUF_SIZE - 1);
+//	HAL_UART_Receive_IT(&huart, (uint8_t*) rx_start,
+//	BUF_SIZE - 1);
+//	HAL_UART_Receive_DMA(&huart, (uint8_t*) rx_start, BUF_SIZE);
+
+    huart.Instance->CR3 |= USART_CR3_DMAR;
+    HAL_DMA_Start(huart.hdmarx, (uint32_t)&huart.Instance->DR, (uint32_t)rx_start, BUF_SIZE);
+	__HAL_UART_ENABLE_IT(&huart, UART_IT_RXNE); // Enable interrupt on reception of each char
 #endif
 }
 
@@ -265,20 +370,20 @@ int Comm::read(char *buf, size_t len) {
 				rx_head = rx_start;
 		}
 		// Init next receive if not so
-		if ((huart.State & HAL_UART_STATE_BUSY_RX) != HAL_UART_STATE_BUSY_RX) {
-			// No ongoing reception
-			size_t rx_len;
-			if (rx_tail < rx_head) {
-				rx_len = rx_head - rx_tail - 1;
-			} else {
-				if (rx_head != rx_start)
-					rx_len = rx_end - rx_tail;
-				else
-					rx_len = rx_end - rx_tail - 1; // If rx_head=0, rx_tail=N-1, the queue is full and nothing can be read
-			}
-
-			HAL_UART_Receive_IT(&huart, (uint8_t*) rx_tail, rx_len); // Start receive
-		}
+//		if ((huart.State & HAL_UART_STATE_BUSY_RX) != HAL_UART_STATE_BUSY_RX) {
+//			// No ongoing reception
+//			size_t rx_len;
+//			if (rx_tail < rx_head) {
+//				rx_len = rx_head - rx_tail - 1;
+//			} else {
+//				if (rx_head != rx_start)
+//					rx_len = rx_end - rx_tail;
+//				else
+//					rx_len = rx_end - rx_tail - 1; // If rx_head=0, rx_tail=N-1, the queue is full and nothing can be read
+//			}
+//
+//			HAL_UART_Receive_IT(&huart, (uint8_t*) rx_tail, rx_len); // Start receive
+//		}
 		// Break if done
 		len -= copied;
 		if (len == 0)

@@ -23,7 +23,7 @@ MountScreenView::MountScreenView() :
 	starmap.setPosition(15, 400, 150, 300);
 	add(starmap);
 
-	starmap.setFOV(2);
+	starmap.setFoV(2);
 	starmap.setDraggable(false);
 	starmap.setVisible(true); // Enable when transition finishes
 
@@ -112,7 +112,7 @@ void MountScreenView::updateDisplay(const EquatorialCoordinates& eq, const Mount
 {
 	if (update)
 	{
-		starmap.aimAt(eq.ra, eq.dec);
+		starmap.setCenter(eq.ra, eq.dec);
 
 		char we = (eq.ra > 0) ? 'E' : 'W';
 		char ns = (eq.dec > 0) ? 'N' : 'S';

@@ -5,9 +5,14 @@
 #ifndef SIMULATOR
 #include "FreeRTOS.h"
 #include "queue.h"
+#include "JoyStick.h"
+#include "Debug.h"
 
 extern xQueueHandle data_updated;
 static int timeout;
+
+static int timer_js = 0;
+static bool nudge_JS = false;
 
 #endif
 
@@ -18,6 +23,14 @@ Model::Model() :
 	SkyCulture::getInstance().init();
 	king = false;
 	red = false;
+	brightness = 16; // TODO: read config
+	follow = false;
+	showConstellation = true;
+	equatorial = true;
+	fov = 5;
+#ifndef SIMULATOR
+	JoyStick_Init();
+#endif
 }
 
 
@@ -47,5 +60,26 @@ void Model::tick() {
 		}
 #endif
 
+#ifndef SIMULATOR
+	// Read the physical joystick and let the listener know
+	if (--timer_js < 0) {
+		float x,y;
+		JoyStick_Read(x,y);
+		debug_if(1, "x=%f, y=%f\r\n", x, y);
+		if (fabsf(x) >= 0.1 || fabsf(y) >= 0.1) {
+			TelescopeBackend::handleNudge(x, y);
+			nudge_JS = true;
+		}
+		else {
+			// Release
+			if (nudge_JS) {
+				nudge_JS = false;
+				TelescopeBackend::handleNudge(0, 0);
+			}
+		}
+		modelListener->joystickMoved(x, y);
+		timer_js = 5;
+	}
+#endif
 	}
 }

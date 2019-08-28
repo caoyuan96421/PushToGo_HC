@@ -5,24 +5,15 @@ StarMapScreenView::StarMapScreenView() :
 		buttonZoomCallback(this, &StarMapScreenView::buttonZoomPressed), buttonGotoCallback(
 				this, &StarMapScreenView::goTo), toggleConstellCallback(this,
 				&StarMapScreenView::toggleConstellSwitched), toggleFollowCallback(
-				this, &StarMapScreenView::toggleFollowSwitched), starSelectedCallback(
+				this, &StarMapScreenView::toggleFollowSwitched), toggleEquatorialCallback(
+				this, &StarMapScreenView::toggleEquatorialSwitched), starSelectedCallback(
 				this, &StarMapScreenView::starSelected), starMapAnimatedCallback(
-				this, &StarMapScreenView::animationFinished), follow(true) {
+				this, &StarMapScreenView::animationFinished), follow(true), selected_star(
+				NULL) {
 	starmap.setPosition(20, 20, 440, 440);
 	starmap.setSelectionCallback(starSelectedCallback);
-	starmap.setDraggable(false);
 
 	add(starmap);
-
-	button_zoomin.setAction(buttonZoomCallback);
-	button_zoomout.setAction(buttonZoomCallback);
-	button_goto.setAction(buttonGotoCallback);
-
-	toggleConstell.setAction(toggleConstellCallback);
-	toggleConstell.forceState(false);
-
-	toggleFollow.setAction(toggleFollowCallback);
-	toggleFollow.forceState(true);
 
 	tim = get_millisec_time();
 
@@ -30,12 +21,32 @@ StarMapScreenView::StarMapScreenView() :
 }
 
 void StarMapScreenView::setupScreen() {
-	starmap.aimAt(TelescopeBackend::getEqCoords());
-	starmap.setFOV(5);
+	starmap.setCenter(TelescopeBackend::getEqCoords());
+	starmap.setFoV(presenter->getFoV());
+
+	button_zoomin.setAction(buttonZoomCallback);
+	button_zoomout.setAction(buttonZoomCallback);
+	button_goto.setAction(buttonGotoCallback);
+
+	toggleConstell.setAction(toggleConstellCallback);
+	toggleConstell.forceState(presenter->isShowConstellation());
+	starmap.setDrawConstell(presenter->isShowConstellation());
+
+	toggleFollow.setAction(toggleFollowCallback);
+	toggleFollow.forceState(presenter->isFollow());
+	follow = presenter->isFollow();
+	if (presenter->isFollow()) {
+		starmap.setDraggable(false);
+	}
+
+	toggleEquatorial.setAction(toggleEquatorialCallback);
+	toggleEquatorial.forceState(presenter->isEquatorial());
+	starmap.setEquatorial(presenter->isEquatorial());
 }
 
 void StarMapScreenView::tearDownScreen() {
-
+	// Save FoV before leaving
+	presenter->setFoV(starmap.getFoV());
 }
 
 void StarMapScreenView::draw(Rect &rect) {
@@ -47,7 +58,7 @@ void StarMapScreenView::draw(Rect &rect) {
 }
 
 void StarMapScreenView::buttonZoomPressed(const AbstractButton &src) {
-	float fov = starmap.getFOV();
+	float fov = starmap.getFoV();
 
 	if (&src == &button_zoomin || &src == &button_zoomout) {
 		if (&src == &button_zoomout) {
@@ -63,15 +74,17 @@ void StarMapScreenView::buttonZoomPressed(const AbstractButton &src) {
 			// Min FOV: 1 deg
 			fov = 0.5;
 		}
-		starmap.setFOV(fov);
+		starmap.setFoV(fov);
 	}
 }
 
 void StarMapScreenView::toggleConstellSwitched(const AbstractButton &src) {
 	if (((const ToggleButton&) src).getState()) {
 		starmap.setDrawConstell(true);
+		presenter->setShowConstellation(true);
 	} else {
 		starmap.setDrawConstell(false);
+		presenter->setShowConstellation(false);
 	}
 }
 
@@ -79,9 +92,21 @@ void StarMapScreenView::toggleFollowSwitched(const AbstractButton &src) {
 	if (((const ToggleButton&) src).getState()) {
 		follow = true;
 		starmap.setDraggable(false);
+		presenter->setFollow(true);
 	} else {
 		follow = false;
 		starmap.setDraggable(true);
+		presenter->setFollow(false);
+	}
+}
+
+void StarMapScreenView::toggleEquatorialSwitched(const AbstractButton &src) {
+	if (((const ToggleButton&) src).getState()) {
+		presenter->setEquatorial(true);
+		starmap.setEquatorial(true);
+	} else {
+		presenter->setEquatorial(false);
+		starmap.setEquatorial(false);
 	}
 }
 
@@ -114,22 +139,36 @@ void StarMapScreenView::starSelected(const SkyObjInfo *star) {
 
 		Unicode::strncpy(textInfoBuffer, buf, TEXTINFO_SIZE);
 		textInfo.invalidate();
+		selected_star = star;
 	} else {
 		textInfoBuffer[0] = 0;
 		textInfo.invalidate();
+		selected_star = NULL;
 	}
 }
 
 void StarMapScreenView::goTo(const AbstractButton &src) {
 //	showMessage("Function not implemented");
-	if (!follow){
+	if (!follow || selected_star != NULL) {
 		EquatorialCoordinates eq_now = TelescopeBackend::getEqCoords();
-		goto_target = starmap.getAim();
-		starmap.aimAt(eq_now.ra, eq_now.dec, true, &starMapAnimatedCallback);
+		if (selected_star) {
+			goto_target = EquatorialCoordinates(selected_star->DEC,
+					selected_star->RA);
+		} else {
+			goto_target = starmap.getCenter();
+		}
+		starmap.setCenter(eq_now.ra, eq_now.dec, true,
+				&starMapAnimatedCallback);
 	}
 }
 
-void StarMapScreenView::animationFinished(){
+void StarMapScreenView::updateCenter(const EquatorialCoordinates &eq) {
+	if (follow) {
+		starmap.setCenter(eq);
+	}
+}
+
+void StarMapScreenView::animationFinished() {
 	follow = true;
 	toggleFollow.forceState(true);
 	toggleFollow.invalidate();

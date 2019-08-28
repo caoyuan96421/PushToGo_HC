@@ -23,3 +23,6 @@ void MountScreenPresenter::setCoords(const EquatorialCoordinates& eq, const Moun
 	view.updateDisplay(eq, meq);
 }
 
+void MountScreenPresenter::joystickMoved(float x, float y) {
+	view.forceJoystickPosition(x, y);
+}

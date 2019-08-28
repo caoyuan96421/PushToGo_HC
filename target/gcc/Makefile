@@ -234,6 +234,8 @@ board_c_files += \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_hal_rtc_ex.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_ll_fmc.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_ll_fsmc.c \
+	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_ll_adc.c \
+	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/STM32F4xx_HAL_Driver/stm32f4xx_ll_adc_ex.c \
 	$(bsp_path)/source/platform/hal/mcu/stm32f4cube/CMSIS/system_stm32f4xx.c
 
 board_cpp_files := $(bsp_path)/source/bsp/OTM8009TouchController.cpp

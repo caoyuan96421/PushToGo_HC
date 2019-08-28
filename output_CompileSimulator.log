@@ -1,1 +1,128 @@
 Converting images
+Compiling gui/src/settingscreen_screen/SettingScreenPresenter.cpp
+Compiling gui/src/polaralignscreen_screen/PolarAlignScreenView.cpp
+Compiling gui/src/settingscreen_screen/SettingScreenView.cpp
+Compiling gui/src/polaralignscreen_screen/PolarAlignScreenPresenter.cpp
+Compiling gui/src/containers/MessagePopup.cpp
+Compiling gui/src/containers/CoordinatePopup.cpp
+Compiling gui/src/containers/JoyStick.cpp
+Compiling gui/src/containers/ConfigPopup.cpp
+Compiling gui/src/dummyscreen_screen/DummyScreenView.cpp
+Compiling gui/src/dummyscreen_screen/DummyScreenPresenter.cpp
+Compiling gui/src/homescreen_screen/HomeScreenView.cpp
+Compiling gui/src/basescreen_screen/BaseScreenView.cpp
+Compiling gui/src/starmapscreen_screen/StarMapScreenPresenter.cpp
+Compiling gui/src/starmapscreen_screen/StarMapScreenView.cpp
+Compiling gui/src/homescreen_screen/HomeScreenPresenter.cpp
+Compiling gui/src/basescreen_screen/BaseScreenPresenter.cpp
+Compiling gui/src/mountscreen_screen/MountScreenPresenter.cpp
+Compiling gui/src/mountscreen_screen/MountScreenView.cpp
+Compiling gui/src/widgets/StarMapWidget.cpp
+Compiling gui/src/widgets/ConfigButton.cpp
+In file included from gui/src/widgets/StarMapWidget.cpp:8:0:
+gui/include/widgets/StarMapWidget.h: In constructor 'StarMapWidget::StarMapWidget()':
+gui/include/widgets/StarMapWidget.h:213:7: warning: 'StarMapWidget::equatorial' will be initialized after [-Wreorder]
+  bool equatorial;
+       ^~~~~~~~~~
+gui/include/widgets/StarMapWidget.h:206:7: warning:   'bool StarMapWidget::first' [-Wreorder]
+  bool first;
+       ^~~~~
+gui/src/widgets/StarMapWidget.cpp:63:1: warning:   when initialized here [-Wreorder]
+ StarMapWidget::StarMapWidget() :
+ ^~~~~~~~~~~~~
+gui/src/widgets/StarMapWidget.cpp: In member function 'bool StarMapWidget::_calcScreenPosition(const SkyObjInfo*, bool, touchgfx::CWRUtil::Q5&, touchgfx::CWRUtil::Q5&, float) const':
+gui/src/widgets/StarMapWidget.cpp:565:52: warning: cast from type 'const SkyObjInfo*' to type 'StarMapWidget::SolarSystemInfo*' casts away qualifiers [-Wcast-qual]
+   const SolarSystemInfo &ss = *((SolarSystemInfo*) star);
+                                                    ^~~~
+gui/src/widgets/StarMapWidget.cpp: In member function 'void StarMapWidget::_handleStarsAndDSO(const SkyObjInfo*, bool) const':
+gui/src/widgets/StarMapWidget.cpp:641:10: warning: enumeration value 'SKYOBJ_NGC' not handled in switch [-Wswitch]
+   switch (star->type) {
+          ^
+gui/src/widgets/StarMapWidget.cpp:641:10: warning: enumeration value 'SKYOBJ_IC' not handled in switch [-Wswitch]
+gui/src/widgets/StarMapWidget.cpp:641:10: warning: enumeration value 'SKYOBJ_SOLARSYSTEM' not handled in switch [-Wswitch]
+gui/src/mountscreen_screen/MountScreenView.cpp: In member function 'void MountScreenView::trackToggled(const touchgfx::AbstractButton&)':
+gui/src/mountscreen_screen/MountScreenView.cpp:196:38: warning: cast from type 'const touchgfx::AbstractButton*' to type 'touchgfx::ToggleButton*' casts away qualifiers [-Wcast-qual]
+  ToggleButton& tb = (ToggleButton &) src;
+                                      ^~~
+gui/src/mountscreen_screen/MountScreenView.cpp: In member function 'void MountScreenView::trackSpeedSelected(const touchgfx::AbstractButton&)':
+gui/src/mountscreen_screen/MountScreenView.cpp:210:38: warning: cast from type 'const touchgfx::AbstractButton*' to type 'touchgfx::ToggleButton*' casts away qualifiers [-Wcast-qual]
+  ToggleButton &tb = (ToggleButton &) src;
+                                      ^~~
+Compiling gui/src/alignscreen_screen/AlignScreenView.cpp
+Compiling gui/src/alignscreen_screen/AlignScreenPresenter.cpp
+Compiling gui/src/model/Model.cpp
+Compiling gui/src/utilityscreen_screen/UtilityScreenPresenter.cpp
+Compiling gui/src/utilityscreen_screen/UtilityScreenView.cpp
+Compiling gui/src/common/FrontendApplication.cpp
+gui/src/model/Model.cpp: In member function 'void Model::tick()':
+gui/src/model/Model.cpp:31:8: warning: unused variable 'x' [-Wunused-variable]
+   char x;
+        ^
+Compiling generated/gui_generated/src/settingscreen_screen/SettingScreenViewBase.cpp
+Compiling generated/gui_generated/src/containers/ConfigPopupBase.cpp
+Compiling generated/gui_generated/src/polaralignscreen_screen/PolarAlignScreenViewBase.cpp
+Compiling generated/gui_generated/src/containers/JoyStickBase.cpp
+Compiling generated/gui_generated/src/containers/MessagePopupBase.cpp
+Compiling generated/gui_generated/src/containers/CoordinatePopupBase.cpp
+Compiling generated/gui_generated/src/dummyscreen_screen/DummyScreenViewBase.cpp
+Compiling generated/gui_generated/src/basescreen_screen/BaseScreenViewBase.cpp
+Compiling generated/gui_generated/src/starmapscreen_screen/StarMapScreenViewBase.cpp
+Compiling generated/gui_generated/src/homescreen_screen/HomeScreenViewBase.cpp
+Compiling generated/gui_generated/src/mountscreen_screen/MountScreenViewBase.cpp
+Compiling astronomy/src/Debug.cpp
+Compiling generated/gui_generated/src/common/FrontendApplicationBase.cpp
+Compiling generated/gui_generated/src/alignscreen_screen/AlignScreenViewBase.cpp
+Compiling generated/gui_generated/src/utilityscreen_screen/UtilityScreenViewBase.cpp
+Compiling astronomy/src/Comm.cpp
+Compiling astronomy/src/TelescopeBackend.cpp
+astronomy/src/Debug.cpp: In function 'void debug_if(int, const char*, ...)':
+astronomy/src/Debug.cpp:86:18: error: 'debug_mutex' was not declared in this scope
+   xSemaphoreTake(debug_mutex, portMAX_DELAY);
+                  ^~~~~~~~~~~
+astronomy/src/Debug.cpp:86:31: error: 'portMAX_DELAY' was not declared in this scope
+   xSemaphoreTake(debug_mutex, portMAX_DELAY);
+                               ^~~~~~~~~~~~~
+astronomy/src/Debug.cpp:86:44: error: 'xSemaphoreTake' was not declared in this scope
+   xSemaphoreTake(debug_mutex, portMAX_DELAY);
+                                            ^
+astronomy/src/Debug.cpp:88:29: error: 'xSemaphoreGive' was not declared in this scope
+   xSemaphoreGive(debug_mutex);
+                             ^
+simulator/gcc/Makefile:209: recipe for target 'build/MINGW32_NT-6.2/astronomy/src/Debug.o' failed
+make[2]: *** [build/MINGW32_NT-6.2/astronomy/src/Debug.o] Error 1
+make[2]: *** Waiting for unfinished jobs....
+astronomy/src/Comm.cpp: In static member function 'static int Comm::read(char*, size_t)':
+astronomy/src/Comm.cpp:409:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+astronomy/src/Comm.cpp: In static member function 'static int Comm::write(char*, size_t)':
+astronomy/src/Comm.cpp:460:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+astronomy/src/TelescopeBackend.cpp: In static member function 'static int TelescopeBackend::startNudge(TelescopeBackend::Direction)':
+astronomy/src/TelescopeBackend.cpp:1258:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+astronomy/src/TelescopeBackend.cpp: In static member function 'static int TelescopeBackend::stopNudge()':
+astronomy/src/TelescopeBackend.cpp:1261:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+astronomy/src/TelescopeBackend.cpp: In static member function 'static int TelescopeBackend::goTo(EquatorialCoordinates)':
+astronomy/src/TelescopeBackend.cpp:1268:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+astronomy/src/TelescopeBackend.cpp: In static member function 'static int TelescopeBackend::goToMount(MountCoordinates)':
+astronomy/src/TelescopeBackend.cpp:1272:1: warning: no return statement in function returning non-void [-Wreturn-type]
+ }
+ ^
+astronomy/src/TelescopeBackend.cpp: At global scope:
+astronomy/src/TelescopeBackend.cpp:1338:17: warning: 'timezone' redeclared without dllimport attribute: previous dllimport ignored [-Wattributes]
+ extern long int timezone;
+                 ^~~~~~~~
+astronomy/src/TelescopeBackend.cpp:16:40: warning: 'status' defined but not used [-Wunused-variable]
+ static TelescopeBackend::mountstatus_t status;
+                                        ^~~~~~
+simulator/gcc/Makefile:171: recipe for target 'generate_assets' failed
+make[1]: *** [generate_assets] Error 2
+simulator/gcc/Makefile:32: recipe for target 'all' failed
+make: *** [all] Error 2

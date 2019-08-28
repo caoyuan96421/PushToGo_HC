@@ -45,6 +45,10 @@ public:
 
 	virtual void showMessage(const char *msg){
 	}
+
+	virtual void joystickMoved(float x, float y){
+
+	}
 protected:
 	Model* model;
 };

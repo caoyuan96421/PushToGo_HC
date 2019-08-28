@@ -15,3 +15,6 @@ void AlignScreenPresenter::deactivate()
 {
 
 }
+void AlignScreenPresenter::joystickMoved(float x, float y) {
+	view.forceJoystickPosition(x, y);
+}

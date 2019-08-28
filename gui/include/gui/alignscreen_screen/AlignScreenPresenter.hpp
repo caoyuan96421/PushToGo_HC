@@ -28,6 +28,8 @@ public:
 
     virtual ~AlignScreenPresenter() {};
 
+	virtual void joystickMoved(float x, float y);
+
 private:
     AlignScreenPresenter();
 

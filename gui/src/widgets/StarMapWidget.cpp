@@ -47,15 +47,29 @@ static float getMaxMagnitude(float fovw) {
 	return 5.0 - 5 * log10f(fovw / 20.0f);
 }
 
+static EquatorialCoordinates toEq(AzimuthalCoordinates &az,
+		LocationCoordinates &loc) {
+	double timeHR = TelescopeBackend::getTimeHR();
+	return az.toLocalEquatorialCoordinates(loc).toEquatorial(timeHR, loc);
+}
+
+static AzimuthalCoordinates toAz(EquatorialCoordinates &eq,
+		LocationCoordinates &loc) {
+	double timeHR = TelescopeBackend::getTimeHR();
+	return eq.toLocalEquatorialCoordinates(timeHR, loc).toAzimuthalCoordinates(
+			loc);
+}
+
 StarMapWidget::StarMapWidget() :
 		ra_ctr(84.3f), dec_ctr(-1.2f), fovw(20), fovh(20), rot(0), location(42,
 				-73), moon_bitmap(BITMAP_MOON_SMALL_ID), selectionCallback(
 		NULL), drawConstell(false), xc(0), yc(0), zc(0), xp(0), yp(0), zp(0), xq(
 				0), yq(0), fovr(14.142f), renderSuccessful(true), displayMoon(
 				false), displaySun(false), tick_rotation(0), selected(NULL), ispressed(
-				false), isdoubleclick(false), isdrag(false), first(true), clickStartTime(
-				0), lastClickDuration(0), clickX(-1000), clickY(-1000), timestamp(
-				TelescopeBackend::getTime()), draggable(true), num_label(0), num_stars(0) {
+				false), isdoubleclick(false), isdrag(false), equatorial(true), first(
+				true), clickStartTime(0), lastClickDuration(0), clickX(-1000), clickY(
+				-1000), timestamp(TelescopeBackend::getTime()), draggable(true), num_label(
+				0), num_stars(0) {
 	this->setPainter(painter);
 	this->setTouchable(true);
 	painter.setColor(Color::getColorFrom24BitRGB(255, 255, 255), 255);
@@ -98,20 +112,42 @@ void StarMapWidget::handleDragEvent(const DragEvent &evt) {
 	int yy = evt.getNewY() - clickY;
 
 	if (isdrag || xx * xx + yy * yy >= DRAG_THRESHOLD * DRAG_THRESHOLD) {
-		if(draggable){
+		if (draggable) {
 			if (!isdoubleclick) {
 				// Pan
-				float ra_factor = 1.0f
-						/ (cosf(fabsf(this->dec_ctr) * DEGREE_F) + 1e-9);
-				if (fabsf(this->dec_ctr) == 90.0 || ra_factor > 3)
-					ra_factor = 3;
-				float ra = this->ra_ctr - dx * fovw * ra_factor;
-				float dec = this->dec_ctr - dy * fovh;
-				this->aimAt(ra, dec);
+				if (equatorial) {
+					float ra_factor = 1.0f
+							/ (cosf(fabsf(this->dec_ctr) * DEGREE_F) + 1e-9F);
+					if (fabsf(this->dec_ctr) == 90.0 || ra_factor > 3)
+						ra_factor = 3;
+					float ra = this->ra_ctr - dx * fovw * ra_factor;
+					float dec = this->dec_ctr - dy * fovh;
+					setCenter(ra, dec);
+				} else {
+					LocationCoordinates loc = TelescopeBackend::getLocation();
+					EquatorialCoordinates eq = EquatorialCoordinates(dec_ctr,
+							ra_ctr);
+					AzimuthalCoordinates az = toAz(eq, loc);
+					float azi_factor = 1.0f
+							/ (cosf(fabsf(az.alt) * DEGREE_F) + 1e-9F);
+					if (fabsf(az.alt) >= 89.9F || azi_factor > 3)
+						azi_factor = 3;
+					float alt = az.alt - dy * fovh;
+					float azi = remainderf(az.azi - dx * fovw * azi_factor,
+							360);
+					if (alt > 89.9F)
+						alt = 89.9F;
+					else if (alt < -89.9F)
+						alt = -89.9F;
+					az.alt = alt;
+					az.azi = azi;
+					eq = toEq(az, loc);
+					setCenter(eq);
+				}
 			} else {
 				// Zoom
 				float fov = fovw * expf(-2.5f * dy);
-				this->setFOV(fov);
+				setFoV(fov);
 			}
 		}
 		isdrag = true;
@@ -361,6 +397,24 @@ void StarMapWidget::updateView() {
 	xq = -sinf(ra_ctr * DEGREE_F);
 	yq = cosf(ra_ctr * DEGREE_F);
 
+	// Calculate field rotation from spherical trigonometry
+	if (equatorial) {
+		rot = 0;
+	} else {
+		LocationCoordinates loc = TelescopeBackend::getLocation();
+		EquatorialCoordinates eq(dec_ctr, ra_ctr);
+		AzimuthalCoordinates az = toAz(eq, loc);
+		// TODO only works for northern hemisphere?
+		float a = (90 - az.alt) * DEGREE_F; // angle a, from field center to zenith
+		float b = (90 - eq.dec) * DEGREE_F; // angle b, from field center to pole
+		float c = (90 - loc.lat) * DEGREE_F; // angle c, from zenith to pole
+		// Cosine rule: cos(c) = cos(a)cos(b) + sin(a)sin(b)cos(C) -> obtain cos(C)
+		float cosC = (cosf(c) - cosf(a) * cosf(b))
+				/ (sinf(a) * sinf(b) + FLT_EPSILON);
+		float C = acosf(clip(cosC)) * RADIAN_F; // Angle of field rotation, without sign
+		rot = (az.azi > 0) ? -C : C; // Determine sign from the east/west sideness
+	}
+
 	// Update visible stars and planets, except Moon
 	float maxmagnitude = getMaxMagnitude(fovw); // Estimate maximum magnitude for searching
 	num_stars = 0;
@@ -428,11 +482,18 @@ void StarMapWidget::updateView() {
 	// Deselect the selected star if it becomes invisible
 	if (selected) {
 		bool found = false;
-		for (int i = 0; i < this->num_stars; i++)
-			if (visibleStars[i].info == selected) {
-				found = true;
-				break;
-			}
+		if (selected == &planetSunMoon[(int) PlanetMoon::SUN] && displaySun) {
+			found = true;
+		} else if (selected == &planetSunMoon[(int) PlanetMoon::MOON]
+				&& displayMoon) {
+			found = true;
+		} else {
+			for (int i = 0; i < this->num_stars; i++)
+				if (visibleStars[i].info == selected) {
+					found = true;
+					break;
+				}
+		}
 		if (!found) {
 			selected = NULL;
 			if (selectionCallback) {
@@ -686,7 +747,21 @@ bool StarMapWidget::drawCanvasWidget(const Rect &invalidatedArea) const {
 		_drawsun(canvas);
 	}
 
-	_drawcross(canvas); // Draw a cross at the center of FOV
+	LocationCoordinates loc = TelescopeBackend::getLocation();
+	SkyObjInfo zenith;
+	for (float alt = -90; alt < 200; alt += 180) {
+		AzimuthalCoordinates az_zenith(alt, 0);
+		EquatorialCoordinates eq_zenith = toEq(az_zenith, loc);
+		zenith.DEC = eq_zenith.dec;
+		zenith.RA = eq_zenith.ra;
+		CWRUtil::Q5 x, y;
+		if (_calcScreenPosition(&zenith, false, x, y, 15))
+			_drawcross(canvas, x, y, Color::getColorFrom24BitRGB(200, 0, 50)); // Draw a cross at the center of FOV
+	}
+
+	_drawcross(canvas, CWRUtil::toQ5(getWidth() / 2),
+			CWRUtil::toQ5(getHeight() / 2),
+			Color::getColorFrom24BitRGB(255, 0, 0)); // Draw a cross at the center of FOV
 
 //	this->canvas = NULL;
 	return renderSuccessful;
@@ -812,25 +887,24 @@ void StarMapWidget::_drawticks(touchgfx::Canvas &canvas, CWRUtil::Q5 x0,
 	}
 }
 
-void StarMapWidget::_drawcross(touchgfx::Canvas &canvas) const {
+void StarMapWidget::_drawcross(touchgfx::Canvas &canvas,
+		touchgfx::CWRUtil::Q5 x_ctr, touchgfx::CWRUtil::Q5 y_ctr,
+		colortype color) const {
 	const int ticks_spacing = 90; // 4 ticks in total
 	int angle = 0;
 
-	CWRUtil::Q5 x0 = CWRUtil::toQ5(getWidth() / 2);
-	CWRUtil::Q5 y0 = CWRUtil::toQ5(getHeight() / 2);
-
-	painter.setColor(Color::getColorFrom24BitRGB(255, 0, 0), 200);
+	painter.setColor(color, 200);
 	CWRUtil::Q5 r = CWRUtil::toQ5(15);
 	CWRUtil::Q5 hw = CWRUtil::toQ5(1); // Half of linewidth
 
 	for (int i = 0; i < 4; i++, angle += ticks_spacing) {
 		CWRUtil::Q15 s = CWRUtil::sine(angle);
 		CWRUtil::Q15 c = CWRUtil::cosine(angle);
-		canvas.moveTo(x0 + hw * c, y0 + hw * s);
-		canvas.lineTo(x0 + r * s + hw * c, y0 - r * c + hw * s);
-		canvas.lineTo(x0 + r * s - hw * c, y0 - r * c - hw * s);
-		canvas.lineTo(x0 - hw * c, y0 - hw * s);
-		canvas.lineTo(x0 + hw * c, y0 + hw * s);
+		canvas.moveTo(x_ctr + hw * c, y_ctr + hw * s);
+		canvas.lineTo(x_ctr + r * s + hw * c, y_ctr - r * c + hw * s);
+		canvas.lineTo(x_ctr + r * s - hw * c, y_ctr - r * c - hw * s);
+		canvas.lineTo(x_ctr - hw * c, y_ctr - hw * s);
+		canvas.lineTo(x_ctr + hw * c, y_ctr + hw * s);
 	}
 
 	if (!canvas.render()) {

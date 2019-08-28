@@ -70,8 +70,6 @@ static ListNode* commandStarted(const char *cmd, int timeout) {
 	debug_if(TB_DEBUG, "commandStarted: %s\r\n", cmd);
 	xSemaphoreTake(mutex, portMAX_DELAY);
 	ListNode *p, *q;
-	for (p = &listhead; p->next; p = p->next)
-		;
 	q = new ListNode;
 	if (!q) {
 		xSemaphoreGive(mutex);
@@ -80,15 +78,21 @@ static ListNode* commandStarted(const char *cmd, int timeout) {
 	q->cmd = cmd;
 	q->time_deadline = xTaskGetTickCount() + timeout;
 	q->next = NULL;
+	// Insert into end of the queue
+	for (p = &listhead; p->next; p = p->next)
+		;
 	p->next = q;
 	q->prev = p;
 	xSemaphoreGive(mutex);
 	return q;
 }
 
+// Must be called while the mutex is taken
 static ListNode* findCommand(const char *cmd) {
 	ListNode *p;
-	for (p = listhead.next; p && strcmp(p->cmd, cmd) != 0; p = p->next)
+	for (p = listhead.next;
+			p && (strcmp(p->cmd, cmd) != 0 || p->retval != 0x7FFFFFFF); // Finished command won't be found
+			p = p->next)
 		;
 	return p;
 }
@@ -100,7 +104,6 @@ static int addMessage(const char *cmd, char *str, int size) {
 		xSemaphoreGive(mutex);
 		return -1;
 	}
-	debug_if(TB_DEBUG, "addMessage: %s (%s)\r\n", str, p->cmd);
 	taskENTER_CRITICAL();
 	if (xQueueIsQueueFullFromISR(p->msgqueue)) {
 		taskEXIT_CRITICAL();
@@ -117,6 +120,7 @@ static int addMessage(const char *cmd, char *str, int size) {
 	msg[size] = '\0'; // Ensure proper termination
 	xQueueSend(p->msgqueue, &msg, portMAX_DELAY);
 	xSemaphoreGive(mutex);
+	debug_if(TB_DEBUG, "addMessage: %s (%s)\r\n", str, p->cmd);
 	return 0;
 }
 
@@ -140,6 +144,25 @@ static void nodeDelete(ListNode *node) {
 		}
 		delete node;
 		xSemaphoreGive(mutex);
+	}
+}
+
+// Thread that keeps running and check every tick
+static void tick_thread(void *arg) {
+	while (1) {
+		// Check all nodes, see if their time is up
+		portTickType timeNow = xTaskGetTickCount();
+		for (ListNode *p = listhead.next; p;) {
+			if (timeNow > p->time_deadline) {
+				ListNode *q = p;
+				p = p->next;
+//				nodeDelete(q);
+			} else {
+				p = p->next;
+			}
+		}
+
+		vTaskDelay(1);
 	}
 }
 
@@ -241,7 +264,7 @@ static void read_thread(void*) {
 
 // Writer thread
 static void write_thread(void *params) {
-	while(true){
+	while (true) {
 		char *cmd;
 		xQueueReceive(cmd_queue, &cmd, portMAX_DELAY);
 		Comm::write(cmd, strlen(cmd));
@@ -260,12 +283,12 @@ static void queryNoResponse(const char *command, const char *arg) {
 	else
 		len = snprintf(buf, sizeof(buf), "%s %s\r\n", command, arg);
 
-	buf[len-1] = '\0'; // Ensure termination
+	buf[len - 1] = '\0'; // Ensure termination
 
 	debug_if(TB_DEBUG, "commandNoReturn: %s\r\n", buf);
 
-	char *cmd = new char[len+1];
-	if (!cmd){
+	char *cmd = new char[len + 1];
+	if (!cmd) {
 		return;
 	}
 	strcpy(cmd, buf);
@@ -281,15 +304,15 @@ static ListNode* queryStart(const char *command, const char *arg, int timeout) {
 	else {
 		len = snprintf(buf, sizeof(buf), "%s %s\r\n", command, arg);
 	}
-	buf[len-1] = '\0'; // Ensure termination
+	buf[len - 1] = '\0'; // Ensure termination
 
 	debug_if(TB_DEBUG, "commandSend: %s\r\n", buf);
 
 	ListNode *cmd_node = commandStarted(command, timeout);
 
 // Write command
-	char *cmd = new char[len+1];
-	if (!cmd){
+	char *cmd = new char[len + 1];
+	if (!cmd) {
 		nodeDelete(cmd_node);
 		return NULL;
 	}
@@ -347,13 +370,14 @@ static int _getEqCoords() {
 	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
 		goto failed;
 	}
-	queryFinish(node);
 
 	if (sscanf(buf, "%lf%lf", &ra, &dec) != 2) {
 		goto failed;
 	}
 	debug_if(TB_DEBUG, "RA=%lf, DEC=%lf\r\n", ra, dec);
 	eq_coord = EquatorialCoordinates(dec, ra);
+
+	queryFinish(node);
 	return 0;
 
 	failed: debug_if(TB_DEBUG, "Failed to read coordinates.\r\n");
@@ -374,13 +398,14 @@ static int _getMountCoords() {
 	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
 		goto failed;
 	}
-	queryFinish(node);
 
 	if (sscanf(buf, "%lf%lf", &ra, &dec) != 2) {
 		goto failed;
 	}
 	debug_if(TB_DEBUG, "RA=%f, DEC=%f\r\n", ra, dec);
 	mc_coord = MountCoordinates(dec, ra);
+
+	queryFinish(node);
 	return 0;
 
 	failed: debug_if(TB_DEBUG, "Failed to read coordinates.\r\n");
@@ -401,10 +426,10 @@ static TelescopeBackend::mountstatus_t _getStatus() {
 	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
 		goto failed;
 	}
-	queryFinish(node);
 
 	debug_if(TB_DEBUG, "state: %s\r\n", buf);
 
+	queryFinish(node);
 	if (strcmp(buf, "stopped") == 0)
 		return TelescopeBackend::MOUNT_STOPPED;
 	else if (strcmp(buf, "slewing") == 0)
@@ -448,12 +473,14 @@ static void poll_thread(void *params) {
 
 void TelescopeBackend::initialize() {
 	Comm::init();
-	xTaskCreate(read_thread, (TASKCREATE_NAME_TYPE)"rx_thread", 1024,
-			NULL, tskIDLE_PRIORITY + 2, NULL);
-	xTaskCreate(write_thread, (TASKCREATE_NAME_TYPE)"tx_thread", 1024,
-			NULL, tskIDLE_PRIORITY + 2, NULL);
+	xTaskCreate(read_thread, (TASKCREATE_NAME_TYPE)"rx_thread", 1024, NULL,
+			tskIDLE_PRIORITY + 2, NULL);
+	xTaskCreate(write_thread, (TASKCREATE_NAME_TYPE)"tx_thread", 1024, NULL,
+			tskIDLE_PRIORITY + 2, NULL);
 	xTaskCreate(poll_thread, (TASKCREATE_NAME_TYPE)"poll_thread", 1024, NULL,
 			tskIDLE_PRIORITY + 2, NULL);
+	xTaskCreate(tick_thread, (TASKCREATE_NAME_TYPE)"tick_thread", 1024, NULL,
+			tskIDLE_PRIORITY + 4, NULL);
 	rtc_init();
 	if (!rtc_enabled()) {
 		setTime(1564788744);
@@ -472,8 +499,7 @@ double TelescopeBackend::getTimeHR() {
 
 	while ((Read_time != (RTC->TR & RTC_TR_RESERVED_MASK))
 			|| (Read_date != (RTC->DR & RTC_DR_RESERVED_MASK))
-			|| (Read_subsec != RTC->SSR)
-			) {
+			|| (Read_subsec != RTC->SSR)) {
 		Read_time = RTC->TR & RTC_TR_RESERVED_MASK;
 		Read_date = RTC->DR & RTC_DR_RESERVED_MASK;
 		Read_subsec = RTC->SSR;
@@ -519,7 +545,7 @@ double TelescopeBackend::getTimeHR() {
 	return t + (millisec - millisec_offset) / 1000.0;
 }
 
-time_t TelescopeBackend::getTime(){
+time_t TelescopeBackend::getTime() {
 	return (time_t) getTimeHR();
 }
 
@@ -534,7 +560,7 @@ void TelescopeBackend::setTime(time_t t, int ms) {
 	int millisec = (PREDIV_S - RTC->SSR) * 1000 / (PREDIV_S + 1);
 
 	millisec_offset = millisec - ms; // How much we're faster than the actual time
-	if (millisec_offset < 0){
+	if (millisec_offset < 0) {
 		millisec_offset += 1000;
 		t++;
 	}
@@ -587,12 +613,13 @@ int TelescopeBackend::syncTime() {
 	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
 		goto failed;
 	}
-	queryFinish(node);
 	timestamp = strtod(buf, NULL);
 	debug_if(TB_DEBUG, "Setting time to %d\r\n", timestamp);
 
 	integral = floor(timestamp);
 	setTime(integral, floor((timestamp - integral) * 1000));
+
+	queryFinish(node);
 	return 0;
 
 	failed: debug_if(TB_DEBUG, "Failed to sync time.\r\n");
@@ -671,8 +698,8 @@ int TelescopeBackend::getConfigString(const char *config, char *buf, int size) {
 	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
 		goto failed;
 	}
-	queryFinish(node);
 
+	queryFinish(node);
 	return 0;
 
 	failed: debug_if(TB_DEBUG, "Failed to read config.%s.\r\n", config);
@@ -740,9 +767,11 @@ int TelescopeBackend::getConfigAll(ConfigItem *configs, int maxConfig) {
 		return 0;
 	}
 	if (queryMessage(node, buf, sizeof(buf), TIMEOUT_IMMEDIATE) != 0) {
+		queryFinish(node);
 		goto failed;
 	}
 	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
+		queryFinish(node);
 		goto failed;
 	}
 	queryFinish(node);
@@ -767,9 +796,11 @@ int TelescopeBackend::getConfigAll(ConfigItem *configs, int maxConfig) {
 			return 0;
 		}
 		if (queryMessage(node, buf, sizeof(buf), TIMEOUT_IMMEDIATE) != 0) {
+			queryFinish(node);
 			goto failed;
 		}
 		if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
+			queryFinish(node);
 			goto failed;
 		}
 		queryFinish(node);
@@ -801,8 +832,7 @@ int TelescopeBackend::getConfigAll(ConfigItem *configs, int maxConfig) {
 	return nConfig;
 
 	failed: debug_if(TB_DEBUG, "Failed to read config.\r\n");
-	queryFinish(node);
-	return nConfig;
+	return 0;
 }
 
 int TelescopeBackend::goTo(EquatorialCoordinates eq) {
@@ -968,11 +998,11 @@ EquatorialCoordinates TelescopeBackend::convertMountToEquatorial(
 	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
 		goto failed;
 	}
-	queryFinish(node);
 
 	double ra, dec;
 	sscanf(buf, "%lf%lf", &ra, &dec);
 
+	queryFinish(node);
 	return EquatorialCoordinates(dec, ra);
 
 	failed: debug_if(TB_DEBUG, "Failed to convert coordinates.\r\n");
@@ -994,11 +1024,11 @@ MountCoordinates TelescopeBackend::convertEquatorialToMount(
 	if (queryWaitForReturn(node, TIMEOUT_IMMEDIATE) != 0) {
 		goto failed;
 	}
-	queryFinish(node);
 
 	double ra, dec;
 	sscanf(buf, "%lf%lf", &ra, &dec);
 
+	queryFinish(node);
 	return MountCoordinates(dec, ra);
 
 	failed: debug_if(TB_DEBUG, "Failed to convert coordinates.\r\n");
@@ -1129,7 +1159,111 @@ void TelescopeBackend::writeConfig(ConfigItem *config) {
 	queryFinish(node);
 }
 
+static float xcurr = 0, ycurr = 0;
+const float thd = 0.667f;
+
+static inline float sgn(float x) {
+	if (x > 0) {
+		return 1;
+	} else {
+		return -1;
+	}
+}
+
+static float f(float x) {
+	return powf(fabsf(x) / thd, 3) * sgn(x);
+}
+
+static bool calc_nudge(float dX, float dY){
+	float xval = 0, yval = 0;
+	int zone;
+	if (dX < -1)
+		dX = -1;
+	if (dX > 1)
+		dX = 1;
+	if (dY < -1)
+		dY = -1;
+	if (dY > 1)
+		dY = 1;
+
+	if (fabsf(dX) <= thd && fabsf(dY) <= thd) {
+		// Zone 1-4
+		if (dY <= dX && dY > -dX) {
+			// Zone 1
+			zone = 1;
+			xval = f(dX);
+		} else if (dY > dX && dY > -dX) {
+			// Zone 2
+			zone = 2;
+			yval = f(dY);
+		} else if (dY > dX && dY <= -dX) {
+			// Zone 3
+			zone = 3;
+			xval = f(dX);
+		} else {
+			// Zone 4
+			zone = 4;
+			yval = f(dY);
+		}
+	} else if (fabsf(dX) >= thd && fabsf(dY) >= thd) {
+		// Zone 9-12
+		if (dX > 0 && dY > 0) {
+			// Zone 9
+			zone = 9;
+			xval = 1;
+			yval = 1;
+		} else if (dX < 0 && dY > 0) {
+			// Zone 10
+			zone = 10;
+			xval = -1;
+			yval = 1;
+		} else if (dX < 0 && dY < 0) {
+			// Zone 11
+			zone = 11;
+			xval = -1;
+			yval = -1;
+		} else {
+			// Zone 12
+			zone = 12;
+			xval = 1;
+			yval = -1;
+		}
+	} else {
+		// Zone 5-8
+		if (dX > thd) {
+			// Zone 5
+			zone = 5;
+			xval = 1;
+		} else if (dY > thd) {
+			// Zone 6
+			zone = 6;
+			yval = 1;
+		} else if (dX < -thd) {
+			// Zone 7
+			zone = 7;
+			xval = -1;
+		} else if (dY < -thd) {
+			// Zone 8
+			zone = 8;
+			yval = -1;
+		}
+	}
+
+	// Return true if old state is different from current state;
+	bool ret = (xcurr != xval || ycurr != yval);
+
+	xcurr = xval;
+	ycurr = yval;
+
+	return ret;
+}
+
 void TelescopeBackend::handleNudge(float x, float y) {
+	if (!calc_nudge(x, y)){
+		return; // Nothing to do
+	}
+	x = xcurr;
+	y = ycurr;
 	debug_if(TB_DEBUG, "nudge %f %f\r\n", x, y);
 	static float savedspeed = -1; // For temporarily storing nudging speed
 	if (x == 0 && y == 0) {

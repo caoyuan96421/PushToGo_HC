@@ -81,17 +81,17 @@ void SettingScreenView::setupScreen_delayed(void *param) {
 
 	debug_if(1, "delayed init finished\r\n");
 #ifndef SIMULATOR
-	vTaskDelete(NULL);
+//	vTaskDelete(NULL);
 #endif
 }
 
 void SettingScreenView::setupScreen() {
-#ifndef SIMULATOR
-	xTaskCreate(setupScreen_delayed, (TASKCREATE_NAME_TYPE)"_delayed", 1024,
-			this, tskIDLE_PRIORITY + 1, NULL);
-#else
+//#ifndef SIMULATOR
+//	xTaskCreate(setupScreen_delayed, (TASKCREATE_NAME_TYPE)"_delayed", 1024,
+//			this, tskIDLE_PRIORITY + 1, NULL);
+//#else
 			setupScreen_delayed(this); // call directly
-#endif
+//#endif
 
 	toggleColor.forceState(((SettingScreenPresenter*) presenter)->isRed());
 	toggleColor.setAction(colorCallback);
